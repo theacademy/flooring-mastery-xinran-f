@@ -2,12 +2,18 @@ package com.sg.flooringmastery.dao;
 
 import com.sg.flooringmastery.dto.Products;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class ProductsDAOFilelmpl implements ProductsDAO {
+    private Map<String, Products> products = new HashMap<>();
+
     @Override
     public Products addProduct(String ProductType, Products product) {
-        throw new UnsupportedOperationException("Not supported yet.");
+        Products prevProduct = products.put(ProductType, product);
+
+        return prevProduct;
     }
 
     @Override

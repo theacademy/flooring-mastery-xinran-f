@@ -2,13 +2,18 @@ package com.sg.flooringmastery.dao;
 
 import com.sg.flooringmastery.dto.Orders;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class OrdersDAOFilelmpl implements OrdersDAO {
+    private Map<Integer, Orders> orders = new HashMap<>();
 
     @Override
     public Orders addOrder(int orderNumber, Orders order) {
-        throw new UnsupportedOperationException("Not supported yet.");
+        Orders prevOrder = orders.put(orderNumber, order);
+
+        return prevOrder;
     }
 
     @Override
