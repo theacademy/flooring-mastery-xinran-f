@@ -2,28 +2,18 @@ package com.sg.flooringmastery.controller;
 
 import com.sg.flooringmastery.ui.UserIO;
 import com.sg.flooringmastery.ui.UserIOConsoleImpl;
+import com.sg.flooringmastery.ui.View;
 
 public class Controller {
     private UserIO io = new UserIOConsoleImpl();
+    private View view = new View();
 
     public void run() {
         boolean keepGoing = true;
         int menuSelection = 0;
 
         while (keepGoing) {
-            io.print("* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *");
-            io.print("* <<Flooring Program>>");
-            io.print("* 1. Display Orders");
-            io.print("* 2. Add an Order");
-            io.print("* 3. Edit an Order");
-            io.print("* 4. Remove an Order");
-            io.print("* 5. Export All Data");
-            io.print("* 6. Quit");
-            io.print("*");
-            io.print("* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *");
-
-            menuSelection = io.readInt("Please select from the"
-                    + " above choices.", 1, 6);
+            menuSelection = getMenuSelection();
 
             switch (menuSelection) {
                 case 1:
@@ -48,7 +38,11 @@ public class Controller {
                     io.print("UNKNOWN COMMAND");
             }
         }
-        
-        io.print("PROGRAM TERMINATED SUCCESSFULLY.");
+
+        io.print("PROGRAM TERMINATED SUCCESSFULLY");
+    }
+
+    private int getMenuSelection() {
+        return view.printMenuAndGetSelection();
     }
 }
