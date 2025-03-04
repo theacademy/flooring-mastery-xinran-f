@@ -1,6 +1,5 @@
 package com.sg.flooringmastery.dto;
 
-import java.awt.geom.Area;
 import java.math.BigDecimal;
 
 public class Orders {
@@ -9,30 +8,15 @@ public class Orders {
     private String state;
     private BigDecimal taxRate;
     private String productType;
-    private BigDecimal Area;
-    private BigDecimal CostPerSquareFoot;
-    private BigDecimal LaborCostPerSquareFoot;
-    private BigDecimal MaterialCost;
-    private BigDecimal LaborCost;
-    private BigDecimal Tax;
-    private BigDecimal Total;
+    private BigDecimal area;
+    private BigDecimal costPerSquareFoot;
+    private BigDecimal laborCostPerSquareFoot;
+    private BigDecimal materialCost;
+    private BigDecimal laborCost;
+    private BigDecimal tax;
+    private BigDecimal total;
 
-    public Orders() {}
-
-    public Orders(int orderNumber, String customerName, String state, BigDecimal taxRate, String productType, BigDecimal area, BigDecimal costPerSquareFoot, BigDecimal laborCostPerSquareFoot, BigDecimal materialCost, BigDecimal laborCost, BigDecimal tax, BigDecimal total) {
-        this.orderNumber = orderNumber;     // read-only field
-        this.customerName = customerName;
-        this.state = state;
-        this.taxRate = taxRate;
-        this.productType = productType;
-        Area = area;
-        CostPerSquareFoot = costPerSquareFoot;
-        LaborCostPerSquareFoot = laborCostPerSquareFoot;
-        MaterialCost = materialCost;
-        LaborCost = laborCost;
-        Tax = tax;
-        Total = total;
-    }
+    public Orders(int orderNumber) {}
 
     public int getOrderNumber() {
         return orderNumber;
@@ -71,59 +55,59 @@ public class Orders {
     }
 
     public BigDecimal getArea() {
-        return Area;
+        return area;
     }
 
     public void setArea(BigDecimal area) {
-        Area = area;
+        this.area = area;
     }
 
     public BigDecimal getCostPerSquareFoot() {
-        return CostPerSquareFoot;
+        return costPerSquareFoot;
     }
 
     public void setCostPerSquareFoot(BigDecimal costPerSquareFoot) {
-        CostPerSquareFoot = costPerSquareFoot;
+        this.costPerSquareFoot = costPerSquareFoot;
     }
 
     public BigDecimal getLaborCostPerSquareFoot() {
-        return LaborCostPerSquareFoot;
+        return laborCostPerSquareFoot;
     }
 
     public void setLaborCostPerSquareFoot(BigDecimal laborCostPerSquareFoot) {
-        LaborCostPerSquareFoot = laborCostPerSquareFoot;
+        this.laborCostPerSquareFoot = laborCostPerSquareFoot;
     }
 
     public BigDecimal getMaterialCost() {
-        return MaterialCost;
+        return materialCost;
     }
 
     public void setMaterialCost(BigDecimal materialCost) {
-        MaterialCost = materialCost;
+        this.materialCost = materialCost;
     }
 
     public BigDecimal getLaborCost() {
-        return LaborCost;
+        return laborCost;
     }
 
     public void setLaborCost(BigDecimal laborCost) {
-        LaborCost = laborCost;
+        this.laborCost = laborCost;
     }
 
     public BigDecimal getTax() {
-        return Tax;
+        return tax;
     }
 
     public void setTax(BigDecimal tax) {
-        Tax = tax;
+        this.tax = tax;
     }
 
     public BigDecimal getTotal() {
-        return Total;
+        return total;
     }
 
     public void setTotal(BigDecimal total) {
-        Total = total;
+        this.total = total;
     }
 
 

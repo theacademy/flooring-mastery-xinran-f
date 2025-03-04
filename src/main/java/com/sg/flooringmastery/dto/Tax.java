@@ -3,39 +3,39 @@ package com.sg.flooringmastery.dto;
 import java.math.BigDecimal;
 
 public class Tax {
-    private String StateAbbreviation;
-    private String StateName;
-    private BigDecimal TaxRate;
+    private String stateAbbreviation;
+    private String stateName;
+    private BigDecimal taxRate;
 
     public Tax() {}
 
     public Tax(String stateAbbreviation, String stateName, BigDecimal taxRate) {
-        StateAbbreviation = stateAbbreviation;
-        StateName = stateName;
-        TaxRate = taxRate;
+        this.stateAbbreviation = stateAbbreviation;
+        this.stateName = stateName;
+        this.taxRate = taxRate;
     }
 
     public String getStateAbbreviation() {
-        return StateAbbreviation;
+        return stateAbbreviation;
     }
 
     public void setStateAbbreviation(String stateAbbreviation) {
-        StateAbbreviation = stateAbbreviation;
+        this.stateAbbreviation = stateAbbreviation;
     }
 
     public String getStateName() {
-        return StateName;
+        return stateName;
     }
 
     public void setStateName(String stateName) {
-        StateName = stateName;
+        this.stateName = stateName;
     }
 
     public BigDecimal getTaxRate() {
-        return TaxRate;
+        return taxRate;
     }
 
     public void setTaxRate(BigDecimal taxRate) {
-        TaxRate = taxRate;
+        this.taxRate = taxRate;
     }
 }
