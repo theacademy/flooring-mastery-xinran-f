@@ -9,12 +9,15 @@ import com.sg.flooringmastery.ui.UserIO;
 import com.sg.flooringmastery.ui.UserIOConsoleImpl;
 import com.sg.flooringmastery.ui.View;
 
+import java.util.List;
+
 public class Controller {
     private UserIO io = new UserIOConsoleImpl();
     private View view = new View();
     private ServiceLayer service = new ServiceLayerImpl();
     private OrdersDAO ordersDAO = new OrdersDAOFilelmpl();
 
+    // TODO
     public Controller() {}
 
     public void run() {
@@ -26,7 +29,7 @@ public class Controller {
 
             switch (menuSelection) {
                 case 1:
-                    io.print("DISPLAY ORDERS");
+                    listOrders();
                     break;
                 case 2:
                     createOrder();
@@ -55,6 +58,14 @@ public class Controller {
         return view.printMenuAndGetSelection();
     }
 
+    private void listOrders() {
+        String orderDate = io.readString("Please enter the order date (MMDDYYYY): ");
+        List<Orders> orderList = ordersDAO.getAllOrders(orderDate);
+
+        view.displayDisplayOrderListBanner();
+        view.displayOrdersList(orderList);
+    }
+
     public void createOrder() {
         view.displayCreateOrderBanner();
 
@@ -69,4 +80,6 @@ public class Controller {
 
         view.displayCreateOrderSuccessBanner();
     }
+
+
 }

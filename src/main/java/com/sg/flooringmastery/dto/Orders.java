@@ -16,7 +16,9 @@ public class Orders {
     private BigDecimal tax;
     private BigDecimal total;
 
-    public Orders(int orderNumber) {}
+    public Orders(int orderNumber) {
+        this.orderNumber = orderNumber;
+    }
 
     public int getOrderNumber() {
         return orderNumber;
