@@ -3,6 +3,8 @@ package com.sg.flooringmastery.ui;
 public interface UserIO {
     void print(String message);
 
+    void println(String message);
+
     double readDouble(String prompt);
 
     double readDouble(String prompt, double min, double max);

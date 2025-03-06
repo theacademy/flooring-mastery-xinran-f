@@ -16,12 +16,14 @@ public class Orders {
     private BigDecimal tax;
     private BigDecimal total;
 
-    public Orders(int orderNumber) {
-        this.orderNumber = orderNumber;
-    }
+    public Orders() {}
 
     public int getOrderNumber() {
         return orderNumber;
+    }
+
+    public void setOrderNumber(int orderNumber) {
+        this.orderNumber = orderNumber;
     }
 
     public String getCustomerName() {

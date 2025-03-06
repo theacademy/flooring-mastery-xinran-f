@@ -8,12 +8,17 @@ public class UserIOConsoleImpl implements UserIO {
 
     @Override
     public void print(String message) {
+        System.out.print(message);
+    }
+
+    @Override
+    public void println(String message) {
         System.out.println(message);
     }
 
     @Override
     public double readDouble(String prompt) {
-        print(prompt);
+        println(prompt);
         return Double.parseDouble(sc.nextLine());
     }
 
@@ -21,7 +26,7 @@ public class UserIOConsoleImpl implements UserIO {
     public double readDouble(String prompt, double min, double max) {
         double num;
         do {
-            print(prompt);
+            println(prompt);
             num = Double.parseDouble(sc.nextLine());
         } while (num < min || num > max);
 
@@ -30,7 +35,7 @@ public class UserIOConsoleImpl implements UserIO {
 
     @Override
     public float readFloat(String prompt) {
-        print(prompt);
+        println(prompt);
         return Float.parseFloat(sc.nextLine());
     }
 
@@ -38,7 +43,7 @@ public class UserIOConsoleImpl implements UserIO {
     public float readFloat(String prompt, float min, float max) {
         float num;
         do {
-            print(prompt);
+            println(prompt);
             num = Float.parseFloat(sc.nextLine());
         } while (num < min || num > max);
 
@@ -47,7 +52,7 @@ public class UserIOConsoleImpl implements UserIO {
 
     @Override
     public int readInt(String prompt) {
-        print(prompt);
+        println(prompt);
         return Integer.parseInt(sc.nextLine());
     }
 
@@ -55,7 +60,7 @@ public class UserIOConsoleImpl implements UserIO {
     public int readInt(String prompt, int min, int max) {
         int num;
         do {
-            print(prompt);
+            println(prompt);
             num = Integer.parseInt(sc.nextLine());
         } while (num < min || num > max);
 
@@ -65,7 +70,7 @@ public class UserIOConsoleImpl implements UserIO {
     @Override
     public long readLong(String prompt) {
 
-        print(prompt);
+        println(prompt);
         return Long.parseLong(sc.nextLine());
     }
 
@@ -73,7 +78,7 @@ public class UserIOConsoleImpl implements UserIO {
     public long readLong(String prompt, long min, long max) {
         long num;
         do {
-            print(prompt);
+            println(prompt);
             num = Long.parseLong(sc.nextLine());
         } while (num < min || num > max);
 
@@ -82,7 +87,7 @@ public class UserIOConsoleImpl implements UserIO {
 
     @Override
     public String readString(String prompt) {
-        print(prompt);
+        println(prompt);
         return sc.nextLine();
     }
 

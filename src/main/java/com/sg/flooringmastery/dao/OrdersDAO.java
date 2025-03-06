@@ -6,7 +6,7 @@ import java.util.List;
 import java.util.Map;
 
 public interface OrdersDAO {
-    Orders addOrder(int orderNumber, Orders order);
+    Orders addOrder(String orderDate, int orderNumber, Orders order);
 
     List<Orders> getAllOrders(String orderDate);
 

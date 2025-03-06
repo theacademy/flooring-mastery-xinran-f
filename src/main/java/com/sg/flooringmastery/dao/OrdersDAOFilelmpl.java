@@ -8,15 +8,26 @@ import java.util.*;
 
 public class OrdersDAOFilelmpl implements OrdersDAO {
     private Map<Integer, Orders> orders = new HashMap<>();
-
     public static final String DELIMETER = ",";
+    public static final String ORDER_DETAILS = "OrderNumber,CustomerName,State,TaxRate,ProductType,Area," +
+            "CostPerSquareFoot,LaborCostPerSquareFoot,MaterialCost,LaborCost,Tax,Total";
 
+    // TODO
     @Override
-    public Orders addOrder(int orderNumber, Orders order) {
-        Orders prevOrder = orders.put(orderNumber, order);
+    public Orders addOrder(String orderDate, int orderNumber, Orders order) {
 
-        return prevOrder;
+        loadOrdersFileByDate(orderDate);
+
+        Orders newOrder = orders.put(orderNumber, order);
+
+        writeOrdersToFile(orderDate);
+
+        return newOrder;
     }
+
+
+
+
 
     @Override
     public List<Orders> getAllOrders(String orderDate) {
@@ -35,16 +46,46 @@ public class OrdersDAOFilelmpl implements OrdersDAO {
         throw new UnsupportedOperationException("Not supported yet.");
     }
 
-    //TODO: to delete
-    //06012013
+    // parameter doesFileExist
+    private void loadOrdersFileByDate(String ordersDate) {
+        String ordersFileName = generateOrdersFileName(ordersDate);
+        String ordersFilePath = generateOrdersFilePath(ordersFileName);
+
+        File file = new File(ordersFilePath);
+
+        // If the file does not exist, quit the method
+        if (!file.exists()) {
+            return;
+        }
+
+        try (Scanner scanner = new Scanner(new BufferedReader(new FileReader(file)))) {
+            String currentLine;
+            Orders currentOrder;
+
+            while (scanner.hasNextLine()) {
+                currentLine = scanner.nextLine();
+
+                // Unmarshall if the line starts with a digit
+                if (!currentLine.isEmpty() && Character.isDigit(currentLine.charAt(0))) {
+                    currentOrder = unmarshallOrder(currentLine);
+                    orders.put(currentOrder.getOrderNumber(), currentOrder);
+                }
+            }
+        } catch (IOException e) {
+            throw new OrdersPersistenceException("Error reading order file.", e);
+        }
+    }
+
+
     private Orders unmarshallOrder(String orderAsText) {
         String[] orderTokens = orderAsText.split(DELIMETER);
+        Orders orderFromFile = new Orders();
 
-        // Index 0 - Order Number
         String orderNumber = orderTokens[0];
         int orderNumberInt = Integer.parseInt(orderNumber);
 
-        Orders orderFromFile = new Orders(orderNumberInt);
+        // Index 0 - Order Number
+        orderFromFile.setOrderNumber(orderNumberInt);
 
         // Index 1 - Customer Name
         orderFromFile.setCustomerName(orderTokens[1]);
@@ -82,39 +123,6 @@ public class OrdersDAOFilelmpl implements OrdersDAO {
         return orderFromFile;
     }
 
-    private void loadOrdersFileByDate(String ordersDate) {
-        // TODO: Method to create?
-//        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MMddyyyy");
-//        String formattedOrderDate = orderDate.format(formatter);
-
-        String ordersFileName = generateOrdersFileName(ordersDate);
-        String ordersFilePath = generateOrdersFilePath(ordersFileName);
-
-        Scanner scanner;
-
-        try {
-            scanner = new Scanner(new BufferedReader(new FileReader(ordersFilePath)));
-        } catch (FileNotFoundException e) {
-            throw new OrdersPersistenceException(
-                    "No order found on this date ", e);
-        }
-
-        String currentLine;
-        Orders currentOrder;
-
-        while (scanner.hasNextLine()) {
-            currentLine = scanner.nextLine();
-
-            // marshall if the line stars with an order number
-            if (Character.isDigit(currentLine.charAt(0))) {
-                currentOrder = unmarshallOrder(currentLine);
-                orders.put(currentOrder.getOrderNumber(), currentOrder);
-            }
-        }
-
-        scanner.close();
-    }
-
     private String masharshallOrder(Orders order) {
         String orderAsText = order.getOrderNumber() + DELIMETER;
         orderAsText += order.getCustomerName() + DELIMETER;
@@ -136,25 +144,42 @@ public class OrdersDAOFilelmpl implements OrdersDAO {
     private void writeOrdersToFile(String ordersDate) {
         String ordersFileName = generateOrdersFileName(ordersDate);
         String ordersFilePath = generateOrdersFilePath(ordersFileName);
+        boolean doesFileExist = true;
 
-        PrintWriter printWriter;
+        PrintWriter printWriter = null;
 
         try {
-            printWriter = new PrintWriter(new FileWriter(ordersFilePath));
+            File file = new File(ordersFilePath);
+
+            // check if the file exists, if not, create a new file
+            if (!file.exists()) {
+                doesFileExist = false;
+                if (!file.createNewFile()) {
+                    throw new IOException("Failed to create new file: " + ordersFilePath);
+                }
+            }
+
+            printWriter = new PrintWriter(new FileWriter(file));
+
+            String orderAsText;
+            List<Orders> ordersList = this.getAllOrders(ordersDate);
+
+            if (!doesFileExist) {
+                printWriter.println(ORDER_DETAILS);
+            }
+
+            for (Orders currentOrder : ordersList) {
+                orderAsText = masharshallOrder(currentOrder);
+                printWriter.println(orderAsText);
+                printWriter.flush();
+            }
         } catch (IOException e) {
-            throw new OrdersPersistenceException(
-                    "Could not save order data.", e);
+            throw new OrdersPersistenceException("Could not save order data.", e);
+        } finally {
+            if (printWriter != null) {
+                printWriter.close();
+            }
         }
-
-        String orderAsText;
-        List<Orders> ordersList = this.getAllOrders(ordersDate);
-
-        for (Orders currentOrder :ordersList) {
-            orderAsText = masharshallOrder(currentOrder);
-            printWriter.println(orderAsText);
-            printWriter.flush();
-        }
-        printWriter.close();
     }
 
     private String generateOrdersFileName(String ordersDate) {

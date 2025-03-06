@@ -5,11 +5,11 @@ import com.sg.flooringmastery.dto.Tax;
 import java.util.List;
 
 public interface TaxDAO {
-    Tax addTax(String StateAbbreviation, Tax tax);
+    Tax addTax(String stateAbbreviation, Tax tax);
 
-    List<Tax> getTaxes();
+    List<Tax> getAllTaxes();
 
-    Tax getTax(String StateAbbreviation);
+    Tax getTax(String state);
 
-    Tax removeTax(String StateAbbreviation);
+    Tax removeTax(String state);
 }

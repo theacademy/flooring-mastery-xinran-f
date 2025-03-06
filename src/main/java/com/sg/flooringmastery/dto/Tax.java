@@ -9,12 +9,6 @@ public class Tax {
 
     public Tax() {}
 
-    public Tax(String stateAbbreviation, String stateName, BigDecimal taxRate) {
-        this.stateAbbreviation = stateAbbreviation;
-        this.stateName = stateName;
-        this.taxRate = taxRate;
-    }
-
     public String getStateAbbreviation() {
         return stateAbbreviation;
     }
@@ -23,7 +17,7 @@ public class Tax {
         this.stateAbbreviation = stateAbbreviation;
     }
 
-    public String getStateName() {
+    public String getState() {
         return stateName;
     }
 
