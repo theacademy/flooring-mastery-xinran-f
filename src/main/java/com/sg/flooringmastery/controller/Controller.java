@@ -117,6 +117,13 @@ public class Controller {
 
         while (!isInputValid) {
             newOrderDate = view.getNewOrderDate();
+
+            if (newOrderDate.equals("")) {
+                view.displayErrorMessageBanner();
+                view.displayNewOrderDateErrorMessage();
+                continue;
+            }
+
             isInputValid = service.validateOrderDate(newOrderDate);
 
             if (!isInputValid) {
@@ -130,6 +137,13 @@ public class Controller {
 
         while (!isInputValid) {
             newOrderCustomerName = view.getNewOrderCustomerName();
+
+            if (newOrderCustomerName.equals("")) {
+                view.displayErrorMessageBanner();
+                view.displayOrderCustomerNameErrorMessage();
+                continue;
+            }
+
             isInputValid = service.validateOrderCustomerName(newOrderCustomerName);
 
             if (!isInputValid) {
@@ -151,6 +165,7 @@ public class Controller {
             isInputValid = service.validateOrderState(newOrderStateFormatted);
 
             if (!isInputValid) {
+                view.displayErrorMessageBanner();
                 view.displayOrderStateNoExistsMessage();
             }
         }
@@ -196,6 +211,13 @@ public class Controller {
 
         while (!isInputValid) {
             String newOrderAreaString = view.getOrderArea();
+
+            if (newOrderAreaString.equals("")) {
+                view.displayErrorMessageBanner();
+                view.displayOrderAreaErrorMessage();
+                continue;
+            }
+
             newOrderArea = new BigDecimal(newOrderAreaString);
             isInputValid = service.validateOrderArea(newOrderArea);
 
@@ -340,6 +362,7 @@ public class Controller {
             isInputValid = service.validateOrderState(updatedState);
 
             if (!isInputValid) {
+                view.displayErrorMessageBanner();
                 view.displayOrderStateNoExistsMessage();
                 continue;
             }
@@ -384,6 +407,7 @@ public class Controller {
             isInputValid = service.validateOrderProductNumber(productsList, updatedProductNumber);
 
             if (!isInputValid) {
+                view.displayErrorMessageBanner();
                 view.displayOrderStateNoExistsMessage();
                 continue;
             }

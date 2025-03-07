@@ -10,9 +10,14 @@ import java.util.*;
 
 public class OrdersDAOFilelmpl implements OrdersDAO {
     private Map<Integer, Orders> orders = new HashMap<>();
+    private final String ORDER_FILES_FOLDER;
     public static final String DELIMETER = ",";
     public static final String ORDER_HEADER = "OrderNumber,CustomerName,State,TaxRate,ProductType,Area," +
             "CostPerSquareFoot,LaborCostPerSquareFoot,MaterialCost,LaborCost,Tax,Total";
+
+    public OrdersDAOFilelmpl(){
+        ORDER_FILES_FOLDER = "./src/main/java/com/sg/flooringmastery/SampleFileData/Orders/";;
+    }
 
     @Override
     public Orders addOrder(String orderDate, int orderNumber, Orders order) throws OrdersDAOException {
@@ -80,7 +85,6 @@ public class OrdersDAOFilelmpl implements OrdersDAO {
 
     @Override
     public void exportData() throws OrdersDAOException {
-        final String ORDERS_DIRECTORY = "./src/main/java/com/sg/flooringmastery/SampleFileData/Orders/";
         final String BACKUP_DIRECTORY = "./src/main/java/com/sg/flooringmastery/SampleFileData/Backup/";
 
         // verify if backup folder exists
@@ -97,7 +101,7 @@ public class OrdersDAOFilelmpl implements OrdersDAO {
             writer.newLine();
 
             // get all order files in the Orders directory
-            File ordersFolder = new File(ORDERS_DIRECTORY);
+            File ordersFolder = new File(ORDER_FILES_FOLDER);
             File[] orderFiles = ordersFolder.listFiles((dir, name) -> name.endsWith(".txt"));
 
             if (orderFiles != null) {
@@ -150,29 +154,44 @@ public class OrdersDAOFilelmpl implements OrdersDAO {
         }
     }
 
-    private void loadOrdersFile(String fileName) throws OrdersDAOException{
+    private void loadOrdersFile(String fileName) throws OrdersDAOException {
         File file = new File(fileName);
 
-        // if the file does not exist, quit the method
-        if (!file.exists()) {
-            return;
+        if (file.exists()) {
+            loadExistingFile(file);
+        } else {
+            createNewFile(file);
         }
+    }
 
+    private void loadExistingFile(File file) throws OrdersDAOException {
         try (Scanner scanner = new Scanner(new BufferedReader(new FileReader(file)))) {
-            String currentLine;
-            Orders currentOrder;
-
-            while (scanner.hasNextLine()) {
-                currentLine = scanner.nextLine();
-
-                // unmarshall if the line starts with a digit
-                if (!currentLine.isEmpty() && Character.isDigit(currentLine.charAt(0))) {
-                    currentOrder = unmarshallOrder(currentLine);
-                    orders.put(currentOrder.getOrderNumber(), currentOrder);
-                }
-            }
+            readFile(scanner);
         } catch (IOException e) {
             throw new OrdersDAOException("Error reading order file.", e);
+        }
+    }
+
+    private void createNewFile(File file) throws OrdersDAOException {
+        try {
+            file.createNewFile();
+        } catch (IOException e) {
+            throw new OrdersDAOException("Error creating order file: " + file.getName(), e);
+        }
+    }
+
+    private void readFile(Scanner scanner) throws OrdersDAOException {
+        String currentLine;
+        Orders currentOrder;
+
+        while (scanner.hasNextLine()) {
+            currentLine = scanner.nextLine();
+
+            // unmarshall if the line starts with a digit
+            if (!currentLine.isEmpty() && Character.isDigit(currentLine.charAt(0))) {
+                currentOrder = unmarshallOrder(currentLine);
+                orders.put(currentOrder.getOrderNumber(), currentOrder);
+            }
         }
     }
 
@@ -302,8 +321,6 @@ public class OrdersDAOFilelmpl implements OrdersDAO {
     }
 
     private String generateOrdersFilePath(String ordersFileName) {
-        // TODO: to delete
-        ///Users/sandy/IdeaProjects/flooring-mastery-xinran-f/src/main/java/com/sg/flooringmastery
-        return "./src/main/java/com/sg/flooringmastery/SampleFileData/Orders/" + ordersFileName;
+        return ORDER_FILES_FOLDER + ordersFileName;
     }
 }

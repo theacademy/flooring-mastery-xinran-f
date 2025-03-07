@@ -2,9 +2,14 @@ package com.sg.flooringmastery.dao;
 
 import org.junit.jupiter.api.*;
 
+import java.io.FileWriter;
+import java.io.IOException;
+
 import static org.junit.jupiter.api.Assertions.*;
 
 class OrdersDAOFilelmplTest {
+
+    OrdersDAO testOrdersDAO;
 
     public OrdersDAOFilelmplTest() {
     }
@@ -18,7 +23,12 @@ class OrdersDAOFilelmplTest {
     }
 
     @BeforeEach
-    public void setUp() {
+    public void setUp() throws IOException {
+        String testFile = "testOrders.txt";
+
+        // use the FileWriter to quickly blank the file
+        new FileWriter(testFile);
+        testOrdersDAO = new OrdersDAOFilelmpl();
     }
 
     @AfterEach
