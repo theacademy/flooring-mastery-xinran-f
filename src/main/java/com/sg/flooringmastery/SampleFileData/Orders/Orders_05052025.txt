@@ -5,3 +5,4 @@ OrderNumber,CustomerName,State,TaxRate,ProductType,Area,CostPerSquareFoot,LaborC
 10,Zoe,Texas,4.45,Carpet,888,2.25,2.10,1998.00,1864.80,171.894600,4034.694600
 11,Swain,Texas,4.45,Wood,234,5.15,4.75,1205.10,1111.50,103.088700,2419.688700
 12,Nunu,Washington,9.25,Carpet,765,2.25,2.10,1721.25,1606.50,307.816875,3635.566875
+13,Heimerstinger,Texas,4.45,Tile,863,3.50,4.15,3020.50,3581.45,293.786775,6895.736775

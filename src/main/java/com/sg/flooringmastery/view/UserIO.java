@@ -1,4 +1,4 @@
-package com.sg.flooringmastery.ui;
+package com.sg.flooringmastery.view;
 
 public interface UserIO {
     void print(String message);

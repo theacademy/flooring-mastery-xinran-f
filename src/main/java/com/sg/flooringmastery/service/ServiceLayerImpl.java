@@ -4,9 +4,9 @@ import com.sg.flooringmastery.dao.OrdersDAO;
 import com.sg.flooringmastery.dao.OrdersPersistenceException;
 import com.sg.flooringmastery.dao.ProductsDAO;
 import com.sg.flooringmastery.dao.TaxDAO;
-import com.sg.flooringmastery.dto.Orders;
-import com.sg.flooringmastery.dto.Products;
-import com.sg.flooringmastery.dto.Tax;
+import com.sg.flooringmastery.model.Orders;
+import com.sg.flooringmastery.model.Products;
+import com.sg.flooringmastery.model.Tax;
 
 import java.io.BufferedReader;
 import java.io.FileNotFoundException;

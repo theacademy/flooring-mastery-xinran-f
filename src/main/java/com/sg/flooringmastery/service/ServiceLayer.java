@@ -1,8 +1,8 @@
 package com.sg.flooringmastery.service;
 
 import com.sg.flooringmastery.dao.OrdersPersistenceException;
-import com.sg.flooringmastery.dto.Orders;
-import com.sg.flooringmastery.dto.Products;
+import com.sg.flooringmastery.model.Orders;
+import com.sg.flooringmastery.model.Products;
 
 import java.math.BigDecimal;
 import java.util.List;

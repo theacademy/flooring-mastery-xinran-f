@@ -1,6 +1,6 @@
 package com.sg.flooringmastery.dao;
 
-import com.sg.flooringmastery.dto.Products;
+import com.sg.flooringmastery.model.Products;
 
 import java.io.BufferedReader;
 import java.io.FileNotFoundException;

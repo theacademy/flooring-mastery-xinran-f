@@ -1,6 +1,6 @@
 package com.sg.flooringmastery.dao;
 
-import com.sg.flooringmastery.dto.Orders;
+import com.sg.flooringmastery.model.Orders;
 
 import java.util.List;
 

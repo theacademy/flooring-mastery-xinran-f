@@ -1,4 +1,4 @@
-package com.sg.flooringmastery.ui;
+package com.sg.flooringmastery.view;
 
 import java.util.Scanner;
 

@@ -1,12 +1,11 @@
 package com.sg.flooringmastery.controller;
 
 import com.sg.flooringmastery.dao.*;
-import com.sg.flooringmastery.dto.Orders;
-import com.sg.flooringmastery.dto.Products;
-import com.sg.flooringmastery.dto.Tax;
+import com.sg.flooringmastery.model.Orders;
+import com.sg.flooringmastery.model.Products;
+import com.sg.flooringmastery.model.Tax;
 import com.sg.flooringmastery.service.ServiceLayer;
-import com.sg.flooringmastery.service.ServiceLayerImpl;
-import com.sg.flooringmastery.ui.View;
+import com.sg.flooringmastery.view.View;
 
 import java.math.BigDecimal;
 import java.util.List;
@@ -61,6 +60,7 @@ public class Controller {
             exitMessage();
 
         } catch (OrdersDAOException e) {
+            view.displayErrorMessageBanner();
             view.displayErrorMessage(e.getMessage());
         }
     }
@@ -71,7 +71,23 @@ public class Controller {
 
     private void listOrders() throws OrdersDAOException {
         String orderDate = view.getOrderDate();
+
+        boolean isOrderDateToEditValid =  service.validateOrderDateFormat(orderDate);
+
+        if (!isOrderDateToEditValid) {
+            view.displayErrorMessageBanner();
+            view.displayErrorMessage("Order date is in an incorrect format. " +
+                    "Please ensure the date is in the correct format (MMDDYYYY).");
+            return;
+        }
+
         List<Orders> orderList = service.getAllOrders(orderDate);
+
+        if (orderList.isEmpty()) {
+            view.displayErrorMessageBanner();
+            view.displayErrorMessage("No orders found for date: " + orderDate);
+            return;
+        }
 
         view.displayDisplayOrderListBanner();
         view.displayOrdersList(orderList);
@@ -104,6 +120,7 @@ public class Controller {
             isInputValid = service.validateOrderDate(newOrderDate);
 
             if (!isInputValid) {
+                view.displayErrorMessageBanner();
                 view.displayNewOrderDateErrorMessage();
             }
         }
@@ -116,6 +133,7 @@ public class Controller {
             isInputValid = service.validateOrderCustomerName(newOrderCustomerName);
 
             if (!isInputValid) {
+                view.displayErrorMessageBanner();
                 view.displayOrderCustomerNameErrorMessage();
             }
         }
@@ -160,6 +178,7 @@ public class Controller {
             isInputValid = service.validateOrderProductNumber(productsList, newOrderProductNumber);
 
             if (!isInputValid) {
+                view.displayErrorMessageBanner();
                 view.displayOrderProductNumberErrorMessage();
             }
         }
@@ -181,6 +200,7 @@ public class Controller {
             isInputValid = service.validateOrderArea(newOrderArea);
 
             if (!isInputValid) {
+                view.displayErrorMessageBanner();
                 view.displayOrderAreaErrorMessage();
             }
         }
@@ -205,6 +225,7 @@ public class Controller {
             isInputValid = service.validatePlaceOrderSelection(placeOrderSelection);
 
             if (!isInputValid) {
+                view.displayErrorMessageBanner();
                 view.displayPlaceOrderErrorMessage();
             }
         }
@@ -265,7 +286,7 @@ public class Controller {
         boolean isOrderDateToEditValid =  service.validateOrderDateFormat(orderDateToEdit);
 
         if (!isOrderDateToEditValid) {
-            view.displayOrderDateInvalidMessage();
+            view.displayOrderDateErrorMessage();
             return;
         }
 
@@ -294,6 +315,7 @@ public class Controller {
             isInputValid = service.validateOrderCustomerName(updatedCustomerName);
 
             if (!isInputValid) {
+                view.displayErrorMessageBanner();
                 view.displayOrderCustomerNameErrorMessage();
                 continue;
             }
@@ -394,6 +416,7 @@ public class Controller {
             isInputValid = service.validateOrderArea(updatedArea);
 
             if (!isInputValid) {
+                view.displayErrorMessageBanner();
                 view.displayOrderAreaErrorMessage();
                 continue;
             }
@@ -442,7 +465,8 @@ public class Controller {
         boolean isOrderDateValid = service.validateOrderDateFormat(orderDate);
 
         if (!isOrderDateValid) {
-            view.displayOrderDateInvalidMessage();
+            view.displayErrorMessageBanner();
+            view.displayOrderDateErrorMessage();
             return;
         }
 
@@ -452,6 +476,7 @@ public class Controller {
 
         // check if the order exists
         if (orderToRemove == null) {
+            view.displayErrorMessageBanner();
             view.displayOrderFileInexistMessage();
             return;
         }
@@ -478,12 +503,13 @@ public class Controller {
             service.exportData();
             view.displayExportSuccessMessage();
         } catch (OrdersPersistenceException e) {
-            view.displayErrorMessage(e.getMessage());
+            throw new OrdersPersistenceException("An error occurred while exporting the data.", e);
         }
     }
 
     private void unknownCommand() {
-        view.displayUnknownCommandBanner();
+        view.displayErrorMessageBanner();
+        view.displayUnknownCommandErrorMessage();
     }
 
     private void exitMessage() {

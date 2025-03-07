@@ -1,7 +1,7 @@
-package com.sg.flooringmastery.ui;
+package com.sg.flooringmastery.view;
 
-import com.sg.flooringmastery.dto.Orders;
-import com.sg.flooringmastery.dto.Products;
+import com.sg.flooringmastery.model.Orders;
+import com.sg.flooringmastery.model.Products;
 
 import java.math.BigDecimal;
 import java.util.List;
@@ -170,7 +170,7 @@ public class View {
         return io.readInt("Please enter the order number you wish to edit: ");
     }
 
-    public void displayOrderDateInvalidMessage() {
+    public void displayOrderDateErrorMessage() {
         io.println("The order date you entered is invalid. Please enter a valid date to proceed.");
     }
 
@@ -240,15 +240,18 @@ public class View {
     }
 
     public void displayExitBanner() {
-        io.print("PROGRAM TERMINATED SUCCESSFULLY");
+        io.println("PROGRAM TERMINATED SUCCESSFULLY");
     }
 
-    public void displayUnknownCommandBanner() {
-        io.print("Unknown Command!");
+    public void displayUnknownCommandErrorMessage() {
+        io.println("Unknown Command!");
     }
 
     public void displayErrorMessage(String errorMsg) {
-        io.print("=== ERROR ===");
-        io.print(errorMsg);
+        io.println(errorMsg + "\n");
+    }
+
+    public void displayErrorMessageBanner() {
+        io.println("=== ERROR ===");
     }
 }

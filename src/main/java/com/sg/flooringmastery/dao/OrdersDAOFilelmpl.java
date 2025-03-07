@@ -1,6 +1,6 @@
 package com.sg.flooringmastery.dao;
 
-import com.sg.flooringmastery.dto.Orders;
+import com.sg.flooringmastery.model.Orders;
 
 import java.io.*;
 import java.math.BigDecimal;
@@ -81,7 +81,7 @@ public class OrdersDAOFilelmpl implements OrdersDAO {
     @Override
     public void exportData() throws OrdersDAOException {
         final String ORDERS_DIRECTORY = "./src/main/java/com/sg/flooringmastery/SampleFileData/Orders/";
-        final String BACKUP_DIRECTORY = "./src/main/java/com/sg/flooringmastery/SampleFileData/Backup";
+        final String BACKUP_DIRECTORY = "./src/main/java/com/sg/flooringmastery/SampleFileData/Backup/";
 
         // verify if backup folder exists
         File backupFolder = new File(BACKUP_DIRECTORY);
@@ -149,8 +149,6 @@ public class OrdersDAOFilelmpl implements OrdersDAO {
             throw new OrdersDAOException("Error exporting orders: " + e.getMessage(), e);
         }
     }
-
-
 
     private void loadOrdersFile(String fileName) throws OrdersDAOException{
         File file = new File(fileName);

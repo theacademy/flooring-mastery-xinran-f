@@ -1,4 +1,4 @@
-package com.sg.flooringmastery.dto;
+package com.sg.flooringmastery.model;
 
 import java.math.BigDecimal;
 
