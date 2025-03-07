@@ -20,19 +20,22 @@ public class OrdersDAOFilelmpl implements OrdersDAO {
     }
 
     @Override
-    public Orders addOrder(String orderDate, int orderNumber, Orders order) throws OrdersDAOException {
-        loadOrdersFileByDate(orderDate);
+    public Orders addOrder(String orderDate, int orderNumber, Orders order, boolean createFileIfNotExists) throws OrdersDAOException {
+        loadOrdersFileByDate(orderDate, createFileIfNotExists);
 
         Orders newOrder = orders.put(orderNumber, order);
 
         writeOrdersToFileByDate(orderDate);
 
+        // clear current orders to avoid displaying two times the same info after adding new order
+        orders.clear();
+
         return newOrder;
     }
 
     @Override
-    public List<Orders> getAllOrders(String orderDate) throws OrdersDAOException {
-        loadOrdersFileByDate(orderDate);
+    public List<Orders> getAllOrders(String orderDate, boolean createFileIfNotExists) throws OrdersDAOException {
+        loadOrdersFileByDate(orderDate, createFileIfNotExists);
 
         return new ArrayList(orders.values());
     }
@@ -45,7 +48,7 @@ public class OrdersDAOFilelmpl implements OrdersDAO {
             return order;
         }
 
-        List<Orders> allOrdersFromThatDate = getAllOrders(orderDate);
+        List<Orders> allOrdersFromThatDate = getAllOrders(orderDate, false);
 
         order = allOrdersFromThatDate.stream()
                 .filter(o -> o.getOrderNumber() == orderNumber)
@@ -64,8 +67,8 @@ public class OrdersDAOFilelmpl implements OrdersDAO {
     }
 
     @Override
-    public void editOrder(Orders orderToEdit, String orderDate) throws OrdersDAOException {
-        loadOrdersFileByDate(orderDate);
+    public void editOrder(Orders orderToEdit, String orderDate, boolean createFileIfNotExists) throws OrdersDAOException {
+        loadOrdersFileByDate(orderDate, createFileIfNotExists);
 
         if (orders.containsKey(orderToEdit.getOrderNumber())) {
             orders.put(orderToEdit.getOrderNumber(), orderToEdit);
@@ -74,8 +77,8 @@ public class OrdersDAOFilelmpl implements OrdersDAO {
     }
 
     @Override
-    public void removeOrder(String orderDate, int orderNumber) throws OrdersDAOException {
-        loadOrdersFileByDate(orderDate);
+    public void removeOrder(String orderDate, int orderNumber, boolean createFileIfNotExists) throws OrdersDAOException {
+        loadOrdersFileByDate(orderDate, createFileIfNotExists);
 
         if (orders.containsKey(orderNumber)) {
             orders.remove(orderNumber);
@@ -106,12 +109,16 @@ public class OrdersDAOFilelmpl implements OrdersDAO {
 
             if (orderFiles != null) {
                 for (File orderFile : orderFiles) {
-                    String orderDateAsString = orderFile.getName().substring(7, 15);
-                    loadOrdersFile(orderFile.getPath());
+                    String orderDateAsString = orderFile.getName().substring(7, 15);  // get file date
+
+                    // Clear orders map before loading a new file
+                    orders.clear();
+
+                    loadOrdersFile(orderFile.getPath(), true);
 
                     // parse the original string into a Date object
                     SimpleDateFormat originalDateFormat = new SimpleDateFormat("MMddyyyyy");
-                    Date orderDate = null;
+                    Date orderDate;
 
                     try {
                         orderDate = originalDateFormat.parse(orderDateAsString);
@@ -140,6 +147,7 @@ public class OrdersDAOFilelmpl implements OrdersDAO {
                                     String.valueOf(order.getTotal()),
                                     orderDateFormatted
                             ) + "\n");
+
                             writer.flush();
                         } catch (IOException e) {
                             throw new OrdersDAOException("Error exporting order: " + orderDateAsString, e);
@@ -154,12 +162,12 @@ public class OrdersDAOFilelmpl implements OrdersDAO {
         }
     }
 
-    private void loadOrdersFile(String fileName) throws OrdersDAOException {
+    private void loadOrdersFile(String fileName, boolean createFileIfNotExists) throws OrdersDAOException {
         File file = new File(fileName);
 
         if (file.exists()) {
             loadExistingFile(file);
-        } else {
+        } else if (createFileIfNotExists){
             createNewFile(file);
         }
     }
@@ -195,11 +203,11 @@ public class OrdersDAOFilelmpl implements OrdersDAO {
         }
     }
 
-    private void loadOrdersFileByDate(String ordersDate) {
+    private void loadOrdersFileByDate(String ordersDate, boolean createFileIfNotExists) {
         String ordersFileName = generateOrdersFileName(ordersDate);
         String ordersFilePath = generateOrdersFilePath(ordersFileName);
 
-        loadOrdersFile(ordersFilePath);
+        loadOrdersFile(ordersFilePath, createFileIfNotExists);
     }
 
     public boolean checkIfOrderDateFileExists(String orderDate) {
@@ -298,7 +306,7 @@ public class OrdersDAOFilelmpl implements OrdersDAO {
             printWriter = new PrintWriter(new FileWriter(file));
 
             String orderAsText;
-            List<Orders> ordersList = this.getAllOrders(ordersDate);
+            List<Orders> ordersList = this.getAllOrders(ordersDate, true);
 
             printWriter.println(ORDER_HEADER);
 

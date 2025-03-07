@@ -52,12 +52,12 @@ public class ServiceLayerImpl implements ServiceLayer {
     @Override
     public void addOrder(String orderDate, int orderNumber, Orders order) throws
             OrderDataValidationException, OrdersPersistenceException {
-        ordersDAO.addOrder(orderDate, orderNumber, order);
+        ordersDAO.addOrder(orderDate, orderNumber, order, true);
     }
 
     @Override
     public List<Orders> getAllOrders(String orderDate) throws OrdersPersistenceException {
-        return ordersDAO.getAllOrders(orderDate);
+        return ordersDAO.getAllOrders(orderDate, false);
     }
 
     @Override
@@ -67,12 +67,12 @@ public class ServiceLayerImpl implements ServiceLayer {
 
     @Override
     public void editOrder(Orders orderToEdit, String orderDate) throws OrdersPersistenceException {
-        ordersDAO.editOrder(orderToEdit, orderDate);
+        ordersDAO.editOrder(orderToEdit, orderDate, false);
     }
 
     @Override
     public void removeOrder(String orderDate, int orderNumber) throws OrdersPersistenceException {
-        ordersDAO.removeOrder(orderDate, orderNumber);
+        ordersDAO.removeOrder(orderDate, orderNumber, false);
     }
 
     @Override
