@@ -110,7 +110,7 @@ public class ServiceLayerImpl implements ServiceLayer {
         String newOrderStateFormatted = orderState.substring(0, 1).toUpperCase() + orderState.substring(1);
 
         for (Tax tax : taxesList) {
-            if (newOrderStateFormatted.equals(tax.getState())) {
+            if (newOrderStateFormatted.equals(tax.getStateName())) {
                 return true;
             }
         }
@@ -183,7 +183,7 @@ public class ServiceLayerImpl implements ServiceLayer {
     }
 
     @Override
-    public boolean checkIfOrderIsReadyToBeUpdated(String editOrderSelection) {
+    public boolean validateEditOrRemoveOrderConfirmation(String editOrderSelection) {
         if (editOrderSelection.equalsIgnoreCase("N")) {
             return false;
         }

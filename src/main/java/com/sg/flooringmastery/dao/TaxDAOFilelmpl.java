@@ -57,7 +57,7 @@ public class TaxDAOFilelmpl implements TaxDAO {
 
             if (!currentLine.startsWith("State")) {
                 currentTax = unmarshallTax(currentLine);
-                taxes.put(currentTax.getState(), currentTax);
+                taxes.put(currentTax.getStateName(), currentTax);
             }
         }
 

@@ -32,5 +32,5 @@ public interface ServiceLayer {
 
     boolean validateOrderDateFormat(String orderDateToEdit);
 
-    boolean checkIfOrderIsReadyToBeUpdated(String editOrderSelection);
+    boolean validateEditOrRemoveOrderConfirmation(String editOrderSelection);
 }

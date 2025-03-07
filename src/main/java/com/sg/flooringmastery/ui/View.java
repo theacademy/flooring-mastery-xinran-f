@@ -169,11 +169,11 @@ public class View {
         return io.readInt("Please enter the order number you wish to edit: ");
     }
 
-    public void displayOrderDateToEditInvalidMessage() {
+    public void displayOrderDateInvalidMessage() {
         io.println("The order date you entered is invalid. Please enter a valid date to proceed.");
     }
 
-    public void displayOrderDateToEditInexistMessage() {
+    public void displayOrderFileInexistMessage() {
         io.println("Sorry, no orders exist for the entered date. Please check the date and try again.");
     }
 
@@ -185,7 +185,6 @@ public class View {
         io.println("Enter a new value to replace the existing data, " +
                 "or press Enter to keep the current value unchanged. ");
     }
-
 
     public String getUpdatedCustomerName(String currentCustomerName) {
         return io.readString("Please enter customer name (" + currentCustomerName + "): ");
@@ -203,7 +202,35 @@ public class View {
         return io.readString("Please enter area (" + currentArea + "): ");
     }
 
+    public void displayEditOrderCancelledMessage() {
+        io.println("The order edit has been cancelled.");
+    }
+
     public void displayEditOrderSuccessBar() {
         io.readString("Order successfully edited. Please hit enter to continue.");
+    }
+
+    public void displayRemoveOrderBanner() {
+        io.println("=== Remove Order ===");
+    }
+
+    public String getOrderDateToRemove() {
+        return io.readString("Please enter the order date you wish to remove: ");
+    }
+
+    public int getOrderNumberToRemove() {
+        return io.readInt("Please enter the order number you wish to remove: ");
+    }
+
+    public String getRemoveOrderConfirmation() {
+        return io.readString("Are you sure you want to remove this order? (Y/N)");
+    }
+
+    public void displayRemoveOrderCancelledMessage() {
+        io.println("The order removal has been cancelled.");
+    }
+
+    public void displayRemoveOrderSuccessMessage() {
+        io.println("The order has been successfully removed.");
     }
 }

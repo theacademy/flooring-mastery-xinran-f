@@ -50,7 +50,7 @@ public class OrdersDAOFilelmpl implements OrdersDAO {
     }
 
     @Override
-    public Orders getOrderToBeEdited(String orderDate, int orderNumber) {
+    public Orders getOrderToBeEditedOrRemoved(String orderDate, int orderNumber) {
         Orders orderToEdit = getOrder(orderDate, orderNumber);
 
         return orderToEdit;
@@ -62,14 +62,18 @@ public class OrdersDAOFilelmpl implements OrdersDAO {
 
         if (orders.containsKey(orderToEdit.getOrderNumber())) {
             orders.put(orderToEdit.getOrderNumber(), orderToEdit);
+            writeOrdersToFile(orderDate);
         }
-
-        writeOrdersToFile(orderDate);
     }
 
     @Override
-    public Orders removeOrder(int orderNumber) {
-        throw new UnsupportedOperationException("Not supported yet.");
+    public void removeOrder(String orderDate, int orderNumber) {
+        loadOrdersFileByDate(orderDate);
+
+        if (orders.containsKey(orderNumber)) {
+            orders.remove(orderNumber);
+            writeOrdersToFile(orderDate);
+        }
     }
 
     // parameter doesFileExist

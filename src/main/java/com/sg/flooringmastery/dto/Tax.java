@@ -17,7 +17,7 @@ public class Tax {
         this.stateAbbreviation = stateAbbreviation;
     }
 
-    public String getState() {
+    public String getStateName() {
         return stateName;
     }
 

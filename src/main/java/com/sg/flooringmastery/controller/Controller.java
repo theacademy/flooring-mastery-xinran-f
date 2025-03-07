@@ -42,7 +42,7 @@ public class Controller {
                     editOrder();
                     break;
                 case 4:
-                    io.println("REMOVE AN ORDER");
+                    removeOrder();
                     break;
                 case 5:
                     io.println("EXPORT ALL DATA");
@@ -136,7 +136,7 @@ public class Controller {
         Tax selectedTax = new Tax();
 
         for (Tax tax : taxList) {
-            if (newOrderStateFormatted.equals(tax.getState())) {
+            if (newOrderStateFormatted.equals(tax.getStateName())) {
                 selectedTax = tax;
             }
         }
@@ -259,31 +259,20 @@ public class Controller {
         boolean isOrderDateToEditValid =  service.validateOrderDateFormat(orderDateToEdit);
 
         if (!isOrderDateToEditValid) {
-            view.displayOrderDateToEditInvalidMessage();
+            view.displayOrderDateInvalidMessage();
             return;
         }
 
         int orderNumberToEdit = view.getOrderNumberToEdit();
-
-
-        //boolean isOrderNumberToEditValid = service.validateOrderNumberToEdit();
-
-//
-//        if (!isOrderDateToEditValid) {
-//            view.displayOrderDateToEditInexistMessage();
-//        }
-
-
-        Orders orderToEdit = ordersDAO.getOrderToBeEdited(orderDateToEdit, orderNumberToEdit);
+        Orders orderToEdit = ordersDAO.getOrderToBeEditedOrRemoved(orderDateToEdit, orderNumberToEdit);
 
         if (orderToEdit == null) {
-            view.displayOrderDateToEditInexistMessage();
+            view.displayOrderFileInexistMessage();
             return;
         }
 
         // asking user for each piece of order data but display the existing data
         view.displayOrder(orderToEdit);
-
 
         // edit customer name
         String updatedCustomerName = "";
@@ -327,25 +316,23 @@ public class Controller {
                 continue;
             }
 
-            orderToEdit.setState(updatedState);
+            orderToEdit.setState(updatedState.substring(0, 1).toUpperCase() + updatedState.substring(1));
 
-            // update tax
+            // update tax rate
             List<Tax> taxList = taxDAO.getAllTaxes();
-            Tax selectedTax = new Tax();
+            BigDecimal updatedTaxRate = BigDecimal.ZERO;
 
             for (Tax tax : taxList) {
-                if (updatedState.equals(tax.getState())) {
-                    selectedTax = tax;
+                if (orderToEdit.getState().equals(tax.getStateName())) {
+                    updatedTaxRate = tax.getTaxRate();
+                    break;
                 }
             }
 
-            BigDecimal updatedTaxRate = selectedTax.getTaxRate();
             orderToEdit.setTaxRate(updatedTaxRate);
 
             needsRecalculation = true;
         }
-
-
 
         // edit product type
         int updatedProductNumber = 0;
@@ -353,7 +340,6 @@ public class Controller {
 
         List<Products> productsList = productsDAO.getAllProducts();
         String updatedProductNumberAsString = "";
-        String updatedProductType = "";
 
         while (!isInputValid) {
             view.displayAvailableProductTypesBanner();
@@ -384,7 +370,6 @@ public class Controller {
 
             needsRecalculation = true;
         }
-
 
         // edit area
         String updatedAreaAsString = "";
@@ -430,9 +415,10 @@ public class Controller {
         String editOrderSelection = view.getEditOrderSelection();
 
         // return to the main menu if order not ready to be updated
-        boolean isOrderReadyToBeUpdated = service.checkIfOrderIsReadyToBeUpdated(editOrderSelection);
+        boolean isOrderReadyToBeUpdated = service.validateEditOrRemoveOrderConfirmation(editOrderSelection);
 
         if (!isOrderReadyToBeUpdated) {
+            view.displayEditOrderCancelledMessage();
             return;
         }
 
@@ -440,5 +426,44 @@ public class Controller {
         ordersDAO.editOrder(orderToEdit, orderDateToEdit);
 
         view.displayEditOrderSuccessBar();
+    }
+
+    public void removeOrder() {
+        view.displayRemoveOrderBanner();
+
+        // get the order date and validate it
+        String orderDate = view.getOrderDateToRemove();
+        boolean isOrderDateValid = service.validateOrderDateFormat(orderDate);
+
+        if (!isOrderDateValid) {
+            view.displayOrderDateInvalidMessage();
+            return;
+        }
+
+        // get the order number
+        int orderNumber = view.getOrderNumberToRemove();
+        Orders orderToRemove = ordersDAO.getOrderToBeEditedOrRemoved(orderDate, orderNumber);
+
+        // check if the order exists
+        if (orderToRemove == null) {
+            view.displayOrderFileInexistMessage();
+            return;
+        }
+
+        // display order details
+        view.displayOrder(orderToRemove);
+
+        String confirmation = view.getRemoveOrderConfirmation();
+
+        boolean isOrderReadyToBeremoved = service.validateEditOrRemoveOrderConfirmation(confirmation);
+
+        if (!isOrderReadyToBeremoved) {
+            view.displayRemoveOrderCancelledMessage();
+            return;
+        }
+
+        // remove the order
+        ordersDAO.removeOrder(orderDate, orderNumber);
+        view.displayRemoveOrderSuccessMessage();
     }
 }

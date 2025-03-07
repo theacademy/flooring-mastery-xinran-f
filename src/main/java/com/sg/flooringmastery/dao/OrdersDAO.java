@@ -3,7 +3,6 @@ package com.sg.flooringmastery.dao;
 import com.sg.flooringmastery.dto.Orders;
 
 import java.util.List;
-import java.util.Map;
 
 public interface OrdersDAO {
     Orders addOrder(String orderDate, int orderNumber, Orders order);
@@ -12,9 +11,9 @@ public interface OrdersDAO {
 
     Orders getOrder(String orderDate, int orderNumber);
 
-    Orders getOrderToBeEdited(String orderDate, int orderNumber);
+    Orders getOrderToBeEditedOrRemoved(String orderDate, int orderNumber);
 
     void editOrder(Orders orderToEdit, String orderDate);
 
-    Orders removeOrder(int orderNumber);
+    void removeOrder(String orderDate, int orderNumber);
 }
