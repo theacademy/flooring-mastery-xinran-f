@@ -12,18 +12,18 @@ import java.math.BigDecimal;
 import java.util.List;
 
 public class Controller {
+    private ServiceLayer service;
     private View view;
     private OrdersDAO ordersDAO;
     private ProductsDAO productsDAO;
     private TaxDAO taxDAO;
-    private ServiceLayer service;
 
-    public Controller(View view, OrdersDAO ordersDAO, ProductsDAO productsDAO, TaxDAO taxDAO, ServiceLayer service) {
+    public Controller(ServiceLayer service, View view, OrdersDAO ordersDAO, ProductsDAO productsDAO, TaxDAO taxDAO) {
+        this.service = service;
         this.view = view;
         this.ordersDAO = ordersDAO;
         this.productsDAO = productsDAO;
         this.taxDAO = taxDAO;
-        this.service = service;
     }
 
     public void run() {
@@ -71,7 +71,7 @@ public class Controller {
 
     private void listOrders() throws OrdersDAOException {
         String orderDate = view.getOrderDate();
-        List<Orders> orderList = ordersDAO.getAllOrders(orderDate);
+        List<Orders> orderList = service.getAllOrders(orderDate);
 
         view.displayDisplayOrderListBanner();
         view.displayOrdersList(orderList);
@@ -239,7 +239,7 @@ public class Controller {
         // set new order number
         if (isFileWithNewOrderDateExisted) {
             // append
-            orderList = ordersDAO.getAllOrders(newOrderDate);
+            orderList = service.getAllOrders(newOrderDate);
             numberOfLastOrderInFile = orderList.get(orderList.size() - 1).getOrderNumber();
             newOrderNumber = numberOfLastOrderInFile + 1;
 
@@ -251,7 +251,7 @@ public class Controller {
             newOrder.setOrderNumber(1);
         }
 
-        ordersDAO.addOrder(newOrderDate, newOrderNumber, newOrder);
+        service.addOrder(newOrderDate, newOrderNumber, newOrder);
 
         view.displayCreateOrderSuccessBanner();
     }
@@ -270,7 +270,7 @@ public class Controller {
         }
 
         int orderNumberToEdit = view.getOrderNumberToEdit();
-        Orders orderToEdit = ordersDAO.getOrderToBeEditedOrRemoved(orderDateToEdit, orderNumberToEdit);
+        Orders orderToEdit = service.getOrderToBeEditedOrRemoved(orderDateToEdit, orderNumberToEdit);
 
         if (orderToEdit == null) {
             view.displayOrderFileInexistMessage();
@@ -429,7 +429,7 @@ public class Controller {
         }
 
         // update order
-        ordersDAO.editOrder(orderToEdit, orderDateToEdit);
+        service.editOrder(orderToEdit, orderDateToEdit);
 
         view.displayEditOrderSuccessBar();
     }
@@ -448,7 +448,7 @@ public class Controller {
 
         // get the order number
         int orderNumber = view.getOrderNumberToRemove();
-        Orders orderToRemove = ordersDAO.getOrderToBeEditedOrRemoved(orderDate, orderNumber);
+        Orders orderToRemove = service.getOrderToBeEditedOrRemoved(orderDate, orderNumber);
 
         // check if the order exists
         if (orderToRemove == null) {
@@ -469,7 +469,7 @@ public class Controller {
         }
 
         // remove the order
-        ordersDAO.removeOrder(orderDate, orderNumber);
+        service.removeOrder(orderDate, orderNumber);
         view.displayRemoveOrderSuccessMessage();
     }
 

@@ -16,7 +16,7 @@ public class APP {
         ProductsDAO productsDAO = new ProductsDAOFilelmpl();
         TaxDAO taxDAO = new TaxDAOFilelmpl();
         ServiceLayer service = new ServiceLayerImpl(ordersDAO, productsDAO, taxDAO);
-        Controller controller = new Controller(view, ordersDAO, productsDAO, taxDAO, service);
+        Controller controller = new Controller(service, view, ordersDAO, productsDAO, taxDAO);
         controller.run();
     }
 }

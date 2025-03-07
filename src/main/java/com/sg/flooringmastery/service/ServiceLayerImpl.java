@@ -1,8 +1,10 @@
 package com.sg.flooringmastery.service;
 
 import com.sg.flooringmastery.dao.OrdersDAO;
+import com.sg.flooringmastery.dao.OrdersPersistenceException;
 import com.sg.flooringmastery.dao.ProductsDAO;
 import com.sg.flooringmastery.dao.TaxDAO;
+import com.sg.flooringmastery.dto.Orders;
 import com.sg.flooringmastery.dto.Products;
 import com.sg.flooringmastery.dto.Tax;
 
@@ -47,9 +49,35 @@ public class ServiceLayerImpl implements ServiceLayer {
         return materialCost.add(laborCost).add(tax);
     }
 
-    // TODO
-    private void createOrder() {
+    @Override
+    public void addOrder(String orderDate, int orderNumber, Orders order) throws
+            OrderDataValidationException, OrdersPersistenceException {
+        ordersDAO.addOrder(orderDate, orderNumber, order);
+    }
 
+    @Override
+    public List<Orders> getAllOrders(String orderDate) throws OrdersPersistenceException {
+        return ordersDAO.getAllOrders(orderDate);
+    }
+
+    @Override
+    public Orders getOrder(String orderDate, int orderNumber) throws OrdersPersistenceException {
+        return ordersDAO.getOrder(orderDate, orderNumber);
+    }
+
+    @Override
+    public void editOrder(Orders orderToEdit, String orderDate) throws OrdersPersistenceException {
+        ordersDAO.editOrder(orderToEdit, orderDate);
+    }
+
+    @Override
+    public void removeOrder(String orderDate, int orderNumber) throws OrdersPersistenceException {
+        ordersDAO.removeOrder(orderDate, orderNumber);
+    }
+
+    @Override
+    public Orders getOrderToBeEditedOrRemoved(String orderDate, int orderNumber) throws OrdersPersistenceException {
+        return ordersDAO.getOrderToBeEditedOrRemoved(orderDate, orderNumber);
     }
 
     // must be in the future
@@ -81,8 +109,6 @@ public class ServiceLayerImpl implements ServiceLayer {
 
         return true;
     }
-
-
 
     // may not be blank and is limited to characters [a-z][0-9] as well as periods and comma characters.
     //  "Acme, Inc." is a valid name.
@@ -141,7 +167,6 @@ public class ServiceLayerImpl implements ServiceLayer {
         return true;
     }
 
-
     @Override
     public boolean validatePlaceOrderSelection(String placeOrderSelection) {
         if (!(placeOrderSelection.equals("Y") ||
@@ -160,9 +185,6 @@ public class ServiceLayerImpl implements ServiceLayer {
 
         return true;
     }
-
-
-
 
     @Override
     public boolean checkIfNewOrderDateExists(String newOrderDate) {
@@ -191,9 +213,6 @@ public class ServiceLayerImpl implements ServiceLayer {
         return true;
     }
 
-
-
-    // TODO
     @Override
     public void exportData() {
         ordersDAO.exportData();
