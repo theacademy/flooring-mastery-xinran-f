@@ -14,19 +14,23 @@ public interface ServiceLayer {
 
     BigDecimal calculateTotal(BigDecimal materialCost, BigDecimal laborCost, BigDecimal tax);
 
-    boolean validateNewOrderDate(String newOrderDate);
+    boolean validateOrderDate(String newOrderDate);
 
-    boolean validateNewOrderCustomerName(String newOrderCustomerName);
+    boolean validateOrderCustomerName(String newOrderCustomerName);
 
-    boolean validateNewOrderState(String newOrderState);
+    boolean validateOrderState(String newOrderState);
 
-    boolean validateNewOrderProductNumber(List<Products> productsList, int newOrderProductType);
+    boolean validateOrderProductNumber(List<Products> productsList, int newOrderProductType);
 
-    boolean validateNewOrderArea(BigDecimal newOrderArea);
+    boolean validateOrderArea(BigDecimal newOrderArea);
 
     boolean validatePlaceOrderSelection(String placeOrderSelection);
 
     boolean checkIfNewOrderIsReadyToBePlaced(String placeOrderSelection);
 
     boolean checkIfNewOrderDateExists(String newOrderDate);
+
+    boolean validateOrderDateFormat(String orderDateToEdit);
+
+    boolean checkIfOrderIsReadyToBeUpdated(String editOrderSelection);
 }

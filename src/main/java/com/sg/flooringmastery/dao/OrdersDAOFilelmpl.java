@@ -12,7 +12,6 @@ public class OrdersDAOFilelmpl implements OrdersDAO {
     public static final String ORDER_DETAILS = "OrderNumber,CustomerName,State,TaxRate,ProductType,Area," +
             "CostPerSquareFoot,LaborCostPerSquareFoot,MaterialCost,LaborCost,Tax,Total";
 
-    // TODO
     @Override
     public Orders addOrder(String orderDate, int orderNumber, Orders order) {
 
@@ -25,10 +24,6 @@ public class OrdersDAOFilelmpl implements OrdersDAO {
         return newOrder;
     }
 
-
-
-
-
     @Override
     public List<Orders> getAllOrders(String orderDate) {
         loadOrdersFileByDate(orderDate);
@@ -37,8 +32,39 @@ public class OrdersDAOFilelmpl implements OrdersDAO {
     }
 
     @Override
-    public Orders getOrder(int orderNumber) {
-        throw new UnsupportedOperationException("Not supported yet.");
+    public Orders getOrder(String orderDate, int orderNumber) {
+        Orders order = new Orders();
+
+        if (!checkIfOrderDateFileExists(orderDate)) {
+            return order;
+        }
+
+        List<Orders> allOrdersFromThatDate = getAllOrders(orderDate);
+
+        order = allOrdersFromThatDate.stream()
+                .filter(o -> o.getOrderNumber() == orderNumber)
+                .findFirst()
+                .orElse(null);
+
+        return order;
+    }
+
+    @Override
+    public Orders getOrderToBeEdited(String orderDate, int orderNumber) {
+        Orders orderToEdit = getOrder(orderDate, orderNumber);
+
+        return orderToEdit;
+    }
+
+    @Override
+    public void editOrder(Orders orderToEdit, String orderDate) {
+        loadOrdersFileByDate(orderDate);
+
+        if (orders.containsKey(orderToEdit.getOrderNumber())) {
+            orders.put(orderToEdit.getOrderNumber(), orderToEdit);
+        }
+
+        writeOrdersToFile(orderDate);
     }
 
     @Override
@@ -53,7 +79,7 @@ public class OrdersDAOFilelmpl implements OrdersDAO {
 
         File file = new File(ordersFilePath);
 
-        // If the file does not exist, quit the method
+        // if the file does not exist, quit the method
         if (!file.exists()) {
             return;
         }
@@ -65,7 +91,7 @@ public class OrdersDAOFilelmpl implements OrdersDAO {
             while (scanner.hasNextLine()) {
                 currentLine = scanner.nextLine();
 
-                // Unmarshall if the line starts with a digit
+                // unmarshall if the line starts with a digit
                 if (!currentLine.isEmpty() && Character.isDigit(currentLine.charAt(0))) {
                     currentOrder = unmarshallOrder(currentLine);
                     orders.put(currentOrder.getOrderNumber(), currentOrder);
@@ -75,6 +101,30 @@ public class OrdersDAOFilelmpl implements OrdersDAO {
             throw new OrdersPersistenceException("Error reading order file.", e);
         }
     }
+
+
+
+
+
+
+
+    public boolean checkIfOrderDateFileExists(String orderDate) {
+        String orderFileName = generateOrdersFileName(orderDate);
+        String orderFilePath = generateOrdersFilePath(orderFileName);
+
+        File file = new File(orderFilePath);
+
+        if (!file.exists()) {
+            return false;
+        }
+
+        return true;
+    }
+
+
+
+
+
 
 
     private Orders unmarshallOrder(String orderAsText) {
@@ -135,7 +185,7 @@ public class OrdersDAOFilelmpl implements OrdersDAO {
         orderAsText += order.getMaterialCost() + DELIMETER;
         orderAsText += order.getLaborCost() + DELIMETER;
         orderAsText += order.getTax() + DELIMETER;
-        orderAsText += order.getTotal() + DELIMETER;
+        orderAsText += order.getTotal();
 
         return orderAsText;
     }
@@ -164,9 +214,8 @@ public class OrdersDAOFilelmpl implements OrdersDAO {
             String orderAsText;
             List<Orders> ordersList = this.getAllOrders(ordersDate);
 
-            if (!doesFileExist) {
-                printWriter.println(ORDER_DETAILS);
-            }
+            // TODO: To check
+            printWriter.println(ORDER_DETAILS);
 
             for (Orders currentOrder : ordersList) {
                 orderAsText = masharshallOrder(currentOrder);

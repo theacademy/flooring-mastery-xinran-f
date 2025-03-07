@@ -39,7 +39,7 @@ public class Controller {
                     createOrder();
                     break;
                 case 3:
-                    io.println("EDIT AN ORDER");
+                    editOrder();
                     break;
                 case 4:
                     io.println("REMOVE AN ORDER");
@@ -80,6 +80,7 @@ public class Controller {
         String newOrderStateFormatted = "";
         BigDecimal newOrderTaxRate = BigDecimal.ZERO;
         int newOrderProductNumber = 0;
+        String newOrderProductType = "";
         BigDecimal newOrderArea = BigDecimal.ZERO;
         BigDecimal newOrderCostPerSquareFoot = BigDecimal.ZERO;
         BigDecimal newOrderLaborCostPerSquareFoot = BigDecimal.ZERO;
@@ -93,7 +94,7 @@ public class Controller {
 
         while (!isInputValid) {
             newOrderDate = view.getNewOrderDate();
-            isInputValid = service.validateNewOrderDate(newOrderDate);
+            isInputValid = service.validateOrderDate(newOrderDate);
 
             if (!isInputValid) {
                 view.displayNewOrderDateErrorMessage();
@@ -105,14 +106,15 @@ public class Controller {
 
         while (!isInputValid) {
             newOrderCustomerName = view.getNewOrderCustomerName();
-            // capitalize the first letter of customer name
-            newOrderCustomerName = newOrderCustomerName.substring(0, 1).toUpperCase() + newOrderCustomerName.substring(1);
-            isInputValid = service.validateNewOrderCustomerName(newOrderCustomerName);
+            isInputValid = service.validateOrderCustomerName(newOrderCustomerName);
 
             if (!isInputValid) {
-                view.displayNewOrderCustomerNameErrorMessage();
+                view.displayOrderCustomerNameErrorMessage();
             }
         }
+
+        // capitalize the first letter of customer name
+        newOrderCustomerName = newOrderCustomerName.substring(0, 1).toUpperCase() + newOrderCustomerName.substring(1);
 
         // validate new order state
         isInputValid = false;
@@ -121,25 +123,25 @@ public class Controller {
             newOrderStateNonFormatted = view.getNewOrderState();
             newOrderStateFormatted = newOrderStateNonFormatted.substring(0, 1).toUpperCase() +
                     newOrderStateNonFormatted.substring(1);
-            isInputValid = service.validateNewOrderState(newOrderStateFormatted);
+            isInputValid = service.validateOrderState(newOrderStateFormatted);
 
             if (!isInputValid) {
-                view.displayNewOrderStateNoExistsMessage();
+                view.displayOrderStateNoExistsMessage();
             }
         }
 
         // TODO: Tax rates are stored as whole numbers??
         // retrieve tax rate
         List<Tax> taxList = taxDAO.getAllTaxes();
-        Tax taxSelected = new Tax();
+        Tax selectedTax = new Tax();
 
         for (Tax tax : taxList) {
             if (newOrderStateFormatted.equals(tax.getState())) {
-                taxSelected = tax;
+                selectedTax = tax;
             }
         }
 
-        newOrderTaxRate = taxSelected.getTaxRate();
+        newOrderTaxRate = selectedTax.getTaxRate();
 
         // validate new order product type
         isInputValid = false;
@@ -149,16 +151,17 @@ public class Controller {
             view.displayAvailableProductTypesBanner();
 
             newOrderProductNumber = view.displayAvailableProductsAndGetNewOrderSelection(productsList);
-            isInputValid = service.validateNewOrderProductNumber(productsList, newOrderProductNumber);
+            isInputValid = service.validateOrderProductNumber(productsList, newOrderProductNumber);
 
             if (!isInputValid) {
-                view.displayNewOrderProductNumberErrorMessage();
+                view.displayOrderProductNumberErrorMessage();
             }
         }
 
         // retrieve product's cost per square foot and labor cost per square foot
         int selectedProductIndex = newOrderProductNumber - 1;
         Products selectedProduct = productsList.get(selectedProductIndex);
+        newOrderProductType = selectedProduct.getProductType();
 
         newOrderCostPerSquareFoot = selectedProduct.getCostPerSquareFoot();
         newOrderLaborCostPerSquareFoot = selectedProduct.getLaborCostPerSquareFoot();
@@ -167,17 +170,17 @@ public class Controller {
         isInputValid = false;
 
         while (!isInputValid) {
-            String newOrderAreaString = view.getNewOrderArea();
+            String newOrderAreaString = view.getOrderArea();
             newOrderArea = new BigDecimal(newOrderAreaString);
-            isInputValid = service.validateNewOrderArea(newOrderArea);
+            isInputValid = service.validateOrderArea(newOrderArea);
 
             if (!isInputValid) {
-                view.displayNewOrderAreaErrorMessage();
+                view.displayOrderAreaErrorMessage();
             }
         }
 
         newOrderMaterialCost = service.calculateMaterialCost(newOrderArea, newOrderCostPerSquareFoot);
-        newOrderLaborCost = service.calculateLaborCost(newOrderArea, newOrderCostPerSquareFoot);
+        newOrderLaborCost = service.calculateLaborCost(newOrderArea, newOrderLaborCostPerSquareFoot);
         newOrderTax = service.calculateTax(newOrderMaterialCost, newOrderLaborCost, newOrderTaxRate);
         newOrderTotal = service.calculateTotal(newOrderMaterialCost, newOrderLaborCost, newOrderTax);
 
@@ -186,9 +189,12 @@ public class Controller {
         String placeOrderSelection = "";
 
         while (!isInputValid) {
-            placeOrderSelection = view.displayCurrentOrderInfoAndGetSelection(newOrderDate, newOrderCustomerName,
-                    newOrderStateNonFormatted, newOrderTaxRate, newOrderProductNumber, newOrderArea, newOrderCostPerSquareFoot,
-                    newOrderLaborCostPerSquareFoot, newOrderMaterialCost, newOrderLaborCost, newOrderTax, newOrderTotal);
+            view.displayCurrentOrderInfo(newOrderDate, newOrderCustomerName,
+                    newOrderStateNonFormatted, newOrderTaxRate, newOrderProductType, newOrderArea,
+                    newOrderCostPerSquareFoot, newOrderLaborCostPerSquareFoot, newOrderMaterialCost,
+                    newOrderLaborCost, newOrderTax, newOrderTotal);
+
+            placeOrderSelection = view.getPlaceOrderSelection();
 
             isInputValid = service.validatePlaceOrderSelection(placeOrderSelection);
 
@@ -206,7 +212,8 @@ public class Controller {
 
         // if orders of this date exists, append new order to the existed file
         boolean isFileWithNewOrderDateExisted = service.checkIfNewOrderDateExists(newOrderDate);
-        int numberOfExistingOrders = 0;
+        //int numberOfExistingOrders = 0;
+        int numberOfLastOrderInFile = 0;
         List<Orders> orderList;
 
         // set new order
@@ -227,8 +234,11 @@ public class Controller {
         if (isFileWithNewOrderDateExisted) {
             // append
             orderList = ordersDAO.getAllOrders(newOrderDate);
-            numberOfExistingOrders = orderList.size();
-            newOrderNumber = numberOfExistingOrders + 1;
+            numberOfLastOrderInFile = orderList.get(orderList.size() - 1).getOrderNumber();
+            newOrderNumber = numberOfLastOrderInFile + 1;
+
+            //numberOfExistingOrders = orderList.size();
+            //newOrderNumber = numberOfExistingOrders + 1;
             newOrder.setOrderNumber(newOrderNumber);
         } else {
             // create a new file with new order starting at order number 1
@@ -241,4 +251,194 @@ public class Controller {
     }
 
 
+    public void editOrder() {
+        view.displayEditOrderBanner();
+        view.diplayEditOrderMessage();
+
+        String orderDateToEdit = view.getOrderDateToEdit();
+        boolean isOrderDateToEditValid =  service.validateOrderDateFormat(orderDateToEdit);
+
+        if (!isOrderDateToEditValid) {
+            view.displayOrderDateToEditInvalidMessage();
+            return;
+        }
+
+        int orderNumberToEdit = view.getOrderNumberToEdit();
+
+
+        //boolean isOrderNumberToEditValid = service.validateOrderNumberToEdit();
+
+//
+//        if (!isOrderDateToEditValid) {
+//            view.displayOrderDateToEditInexistMessage();
+//        }
+
+
+        Orders orderToEdit = ordersDAO.getOrderToBeEdited(orderDateToEdit, orderNumberToEdit);
+
+        if (orderToEdit == null) {
+            view.displayOrderDateToEditInexistMessage();
+            return;
+        }
+
+        // asking user for each piece of order data but display the existing data
+        view.displayOrder(orderToEdit);
+
+
+        // edit customer name
+        String updatedCustomerName = "";
+        boolean isInputValid = false;
+
+        while (!isInputValid) {
+            updatedCustomerName = view.getUpdatedCustomerName(orderToEdit.getCustomerName());
+
+            if (updatedCustomerName.isEmpty()) {
+                break;
+            }
+
+            isInputValid = service.validateOrderCustomerName(updatedCustomerName);
+
+            if (!isInputValid) {
+                view.displayOrderCustomerNameErrorMessage();
+                continue;
+            }
+
+            orderToEdit.setCustomerName(updatedCustomerName.substring(0, 1).toUpperCase() + updatedCustomerName.substring(1));
+        }
+
+        boolean needsRecalculation = false;
+
+        // edit state
+        String updatedState = "";
+        isInputValid = false;
+
+        while (!isInputValid) {
+            updatedState = view.getUpdatedState(orderToEdit.getState());
+
+            // if empty, leave the existing data in place
+            if (updatedState.isEmpty()) {
+                break;
+            }
+
+            isInputValid = service.validateOrderState(updatedState);
+
+            if (!isInputValid) {
+                view.displayOrderStateNoExistsMessage();
+                continue;
+            }
+
+            orderToEdit.setState(updatedState);
+
+            // update tax
+            List<Tax> taxList = taxDAO.getAllTaxes();
+            Tax selectedTax = new Tax();
+
+            for (Tax tax : taxList) {
+                if (updatedState.equals(tax.getState())) {
+                    selectedTax = tax;
+                }
+            }
+
+            BigDecimal updatedTaxRate = selectedTax.getTaxRate();
+            orderToEdit.setTaxRate(updatedTaxRate);
+
+            needsRecalculation = true;
+        }
+
+
+
+        // edit product type
+        int updatedProductNumber = 0;
+        isInputValid = false;
+
+        List<Products> productsList = productsDAO.getAllProducts();
+        String updatedProductNumberAsString = "";
+        String updatedProductType = "";
+
+        while (!isInputValid) {
+            view.displayAvailableProductTypesBanner();
+            view.displayAvailableProducts(productsList);
+
+            updatedProductNumberAsString = view.getUpdatedProductNumberInString(orderToEdit.getProductType());
+
+            // if empty, leave the existing data in place
+            if (updatedProductNumberAsString.isEmpty()) {
+                break;
+            }
+
+            updatedProductNumber = Integer.parseInt(updatedProductNumberAsString);
+            isInputValid = service.validateOrderProductNumber(productsList, updatedProductNumber);
+
+            if (!isInputValid) {
+                view.displayOrderStateNoExistsMessage();
+                continue;
+            }
+
+            int selectedProductIndex = updatedProductNumber - 1;
+            Products updatedProduct = productsList.get(selectedProductIndex);
+            orderToEdit.setProductType(updatedProduct.getProductType());
+
+            // set product's cost per square foot and labor cost per square foot
+            orderToEdit.setCostPerSquareFoot(updatedProduct.getCostPerSquareFoot());
+            orderToEdit.setLaborCostPerSquareFoot(updatedProduct.getLaborCostPerSquareFoot());
+
+            needsRecalculation = true;
+        }
+
+
+        // edit area
+        String updatedAreaAsString = "";
+        BigDecimal updatedArea = BigDecimal.ZERO;
+        isInputValid = false;
+
+        while (!isInputValid) {
+            updatedAreaAsString = view.getUpdatedArea(orderToEdit.getArea().toString());
+
+            // if empty, leave the existing data in place
+            if (updatedAreaAsString.isEmpty()) {
+                break;
+            }
+
+            updatedArea = new BigDecimal(updatedAreaAsString);
+            isInputValid = service.validateOrderArea(updatedArea);
+
+            if (!isInputValid) {
+                view.displayOrderAreaErrorMessage();
+                continue;
+            }
+
+            orderToEdit.setArea(updatedArea);
+            needsRecalculation = true;
+        }
+
+        if (needsRecalculation) {
+            BigDecimal updatedOrderMaterialCost = service.calculateMaterialCost(orderToEdit.getArea(), orderToEdit.getCostPerSquareFoot());
+            orderToEdit.setMaterialCost(updatedOrderMaterialCost);
+            BigDecimal updatedOrderLaborCost = service.calculateLaborCost(orderToEdit.getArea(), orderToEdit.getLaborCostPerSquareFoot());
+            orderToEdit.setLaborCost(updatedOrderLaborCost);
+            BigDecimal updatedOrderTax = service.calculateTax(updatedOrderMaterialCost, updatedOrderLaborCost, orderToEdit.getTaxRate());
+            orderToEdit.setTax(updatedOrderTax);
+            BigDecimal updatedOrderTotal = service.calculateTotal(updatedOrderMaterialCost, updatedOrderLaborCost, updatedOrderTax);
+            orderToEdit.setTotal(updatedOrderTotal);
+        }
+
+        view.displayCurrentOrderInfo(orderDateToEdit, orderToEdit.getCustomerName(),
+                orderToEdit.getState(), orderToEdit.getTaxRate(), orderToEdit.getProductType(),
+                orderToEdit.getArea(), orderToEdit.getCostPerSquareFoot(), orderToEdit.getLaborCostPerSquareFoot(),
+                orderToEdit.getMaterialCost(), orderToEdit.getLaborCost(), orderToEdit.getTax(), orderToEdit.getTotal());
+
+        String editOrderSelection = view.getEditOrderSelection();
+
+        // return to the main menu if order not ready to be updated
+        boolean isOrderReadyToBeUpdated = service.checkIfOrderIsReadyToBeUpdated(editOrderSelection);
+
+        if (!isOrderReadyToBeUpdated) {
+            return;
+        }
+
+        // update order
+        ordersDAO.editOrder(orderToEdit, orderDateToEdit);
+
+        view.displayEditOrderSuccessBar();
+    }
 }

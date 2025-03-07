@@ -1,0 +1,6 @@
+OrderNumber,CustomerName,State,TaxRate,ProductType,Area,CostPerSquareFoot,LaborCostPerSquareFoot,MaterialCost,LaborCost,Tax,Total
+1,ziggs,Calfornia,25.00,Carpet,555,2.25,2.10,1248.75,1165.50,603.5625,3017.8125
+5,Mike,Calfornia,25.00,Wood,500,5.15,4.75,2575.00,2575.00,1287.5000,6437.5000
+6,Momo,Kentucky,6.00,Carpet,450,2.25,2.10,1012.50,1012.50,121.5000,2146.5000
+7,Poppy,Washington,9.25,Wood,187,5.15,4.75,963.05,888.25,171.245250,2022.545250
+8,Lux,Texas,4.45,Tile,190,3.50,4.15,665.00,788.50,64.680750,1518.180750

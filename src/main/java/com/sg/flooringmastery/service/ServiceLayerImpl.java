@@ -47,21 +47,20 @@ public class ServiceLayerImpl implements ServiceLayer {
         return materialCost.add(laborCost).add(tax);
     }
 
+    // TODO
+    private void createOrder() {
 
-
-
+    }
 
     // must be in the future
     @Override
-    public boolean validateNewOrderDate(String newOrderDate) {
-        DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("MMddyyyy");
-        LocalDate orderDateFormatted;
-
-        try {
-            orderDateFormatted = LocalDate.parse(newOrderDate, dateFormatter);
-        } catch (DateTimeParseException e) {
+    public boolean validateOrderDate(String orderDate) {
+        if (!validateOrderDateFormat(orderDate)) {
             return false;
         }
+
+        DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("MMddyyyy");
+        LocalDate orderDateFormatted = LocalDate.parse(orderDate, dateFormatter);
 
         if (!orderDateFormatted.isAfter(LocalDate.now())) {
             return false;
@@ -70,17 +69,32 @@ public class ServiceLayerImpl implements ServiceLayer {
         return true;
     }
 
+    @Override
+    public boolean validateOrderDateFormat(String newOrderDate) {
+        DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("MMddyyyy");
+
+        try {
+            LocalDate.parse(newOrderDate, dateFormatter);
+        } catch (DateTimeParseException e) {
+            return false;
+        }
+
+        return true;
+    }
+
+
+
     // may not be blank and is limited to characters [a-z][0-9] as well as periods and comma characters.
     //  "Acme, Inc." is a valid name.
     @Override
-    public boolean validateNewOrderCustomerName(String newOrderCustomerName) {
-        if (newOrderCustomerName == null || newOrderCustomerName.trim().isEmpty()) {
+    public boolean validateOrderCustomerName(String orderCustomerName) {
+        if (orderCustomerName == null || orderCustomerName.trim().isEmpty()) {
             return false;
         }
 
         String customerNamePattern = "^[a-z0-9., ]+$";
 
-        if (!newOrderCustomerName.matches(customerNamePattern)) {
+        if (!orderCustomerName.matches(customerNamePattern)) {
             return false;
         }
 
@@ -91,9 +105,9 @@ public class ServiceLayerImpl implements ServiceLayer {
     // we cannot sell there. If the tax file is modified to include the state,
     // it should be allowed without changing the application code.
     @Override
-    public boolean validateNewOrderState(String newOrderState) {
+    public boolean validateOrderState(String orderState) {
         List<Tax> taxesList = taxDAO.getAllTaxes();
-        String newOrderStateFormatted = newOrderState.substring(0, 1).toUpperCase() + newOrderState.substring(1);
+        String newOrderStateFormatted = orderState.substring(0, 1).toUpperCase() + orderState.substring(1);
 
         for (Tax tax : taxesList) {
             if (newOrderStateFormatted.equals(tax.getState())) {
@@ -104,15 +118,13 @@ public class ServiceLayerImpl implements ServiceLayer {
         return false;
     }
 
-
-
     // Show a list of available products and pricing information to choose from.
     // Again, if a product is added to the file it should show up in the application without a code change.
     @Override
-    public boolean validateNewOrderProductNumber(List<Products> productsList, int newOrderProductNumber) {
+    public boolean validateOrderProductNumber(List<Products> productsList, int orderProductNumber) {
         int productsListSize = productsList.size();
 
-        if (newOrderProductNumber <= 0 || newOrderProductNumber > productsListSize) {
+        if (orderProductNumber <= 0 || orderProductNumber > productsListSize) {
             return false;
         }
 
@@ -121,8 +133,8 @@ public class ServiceLayerImpl implements ServiceLayer {
 
     // The area must be a positive decimal. Minimum order size is 100 sq ft.
     @Override
-    public boolean validateNewOrderArea(BigDecimal newOrderArea) {
-        if (newOrderArea.compareTo(BigDecimal.ZERO) <= 0 || newOrderArea.compareTo(new BigDecimal("100")) < 0) {
+    public boolean validateOrderArea(BigDecimal orderArea) {
+        if (orderArea.compareTo(BigDecimal.ZERO) <= 0 || orderArea.compareTo(new BigDecimal("100")) < 0) {
             return false;
         }
 
@@ -166,6 +178,15 @@ public class ServiceLayerImpl implements ServiceLayer {
         }
 
         scanner.close();
+
+        return true;
+    }
+
+    @Override
+    public boolean checkIfOrderIsReadyToBeUpdated(String editOrderSelection) {
+        if (editOrderSelection.equalsIgnoreCase("N")) {
+            return false;
+        }
 
         return true;
     }

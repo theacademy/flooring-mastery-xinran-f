@@ -32,21 +32,25 @@ public class View {
         return io.readString("Please enter the order date (MMDDYYYY): ");
     }
 
+    public void displayOrder(Orders currentOrder) {
+        String orderInfo = String.format("Order #%d | Customer Name: %s | State: %s | Tax Rate: %.2f | " +
+                        "Product Type: %s | Area: %.2f | Cost Per Square Foot: %.2f | Labor Cost Per Square Foot : %.2f | " +
+                        "Material Cost: %.2f | Labor Cost: %.2f | Tax: %.2f | Total: $%.2f",
+                currentOrder.getOrderNumber(), currentOrder.getCustomerName(), currentOrder.getState(),
+                currentOrder.getTaxRate(), currentOrder.getProductType(), currentOrder.getArea(),
+                currentOrder.getCostPerSquareFoot(), currentOrder.getLaborCostPerSquareFoot(),
+                currentOrder.getMaterialCost(), currentOrder.getLaborCost(), currentOrder.getTax(),
+                currentOrder.getTotal());
+
+        io.println(orderInfo);
+    }
+
     /* Display orders will ask the user for a date and then display the orders for that date.
     If no orders exist for that date, it will display an error message and return the user to the main menu.
      */
     public void displayOrdersList(List<Orders> ordersList) {
         for (Orders currentOrder : ordersList) {
-            String orderInfo = String.format("Order #%d | Customer Name: %s | State: %s | Tax Rate: %.2f | " +
-                            "Product Type: %s | Area: %.2f | Cost Per Square Foot: %.2f | Labor Cost Per Square Foot : %.2f | " +
-                            "Material Cost: %.2f | Labor Cost: %.2f | Tax: %.2f | Total: $%.2f",
-                    currentOrder.getOrderNumber(), currentOrder.getCustomerName(), currentOrder.getState(),
-                    currentOrder.getTaxRate(), currentOrder.getProductType(), currentOrder.getArea(),
-                    currentOrder.getCostPerSquareFoot(), currentOrder.getLaborCostPerSquareFoot(),
-                    currentOrder.getMaterialCost(), currentOrder.getLaborCost(), currentOrder.getTax(),
-                    currentOrder.getTotal());
-
-            io.println(orderInfo);
+            displayOrder(currentOrder);  // Call the displayOrder method for each order
         }
 
         io.readString("Please hit enter to continue.");
@@ -72,7 +76,7 @@ public class View {
         return io.readString("Please enter the customer name: ");
     }
 
-    public void displayNewOrderCustomerNameErrorMessage() {
+    public void displayOrderCustomerNameErrorMessage() {
         io.println("Please enter a valid customer name that is not blank and only contains " +
                 "lowercase letters (a-z), digits (0-9), periods (.), and commas (,).");
     }
@@ -81,60 +85,125 @@ public class View {
         return io.readString("Please enter the state: ");
     }
 
-    public void displayNewOrderStateNoExistsMessage() {
+    public void displayOrderStateNoExistsMessage() {
         io.println("The state does not exist in the tax file, we cannot sell there.");
     }
 
     public int displayAvailableProductsAndGetNewOrderSelection(List<Products> productsList) {
+        displayAvailableProducts(productsList);
+
+        return io.readInt("Please select the product: ");
+    }
+
+    public void displayAvailableProducts(List<Products> productsList) {
         int numberOfProducts = 1;
 
         for (Products product : productsList) {
             String productInfo = String.format("#%d | Product Type: %s | " +
-                    "Cost Per Square Foot: %.2f | Labor Cost Per Square Foot: %.2f",
+                            "Cost Per Square Foot: %.2f | Labor Cost Per Square Foot: %.2f",
                     numberOfProducts, product.getProductType(),
                     product.getCostPerSquareFoot(), product.getLaborCostPerSquareFoot());
 
             io.println(productInfo);
             numberOfProducts++;
         }
-
-        return io.readInt("Please select the product: ");
     }
 
     public void displayAvailableProductTypesBanner() {
         io.println("=== Available Products ===");
     }
 
-    public void displayNewOrderProductNumberErrorMessage() {
+    public void displayOrderProductNumberErrorMessage() {
         io.println("Please enter a valid product number.");
     }
 
-    public String getNewOrderArea() {
+    public String getOrderArea() {
         return io.readString("Please enter the area: ");
     }
 
-    public void displayNewOrderAreaErrorMessage(){
+    public void displayOrderAreaErrorMessage(){
         io.println("The area must be a positive decimal. Minimum order size is 100 sq ft.");
     }
 
-    public String displayCurrentOrderInfoAndGetSelection(String newOrderDate, String newOrderCustomerName, String newOrderState,
-                                                         BigDecimal newOrderTaxRate, int newOrderProductNumber, BigDecimal newOrderArea, BigDecimal newOrderCostPerSquareFoot,
-                                                         BigDecimal newOrderLaborCostPerSquareFoot, BigDecimal newOrderMaterialCost, BigDecimal newOrderLaborCost,
-                                                         BigDecimal newOrderTax, BigDecimal newOrderTotal) {
+
+
+    public void displayCurrentOrderInfo(String newOrderDate, String newOrderCustomerName, String newOrderState,
+                                        BigDecimal newOrderTaxRate, String newOrderProductType, BigDecimal newOrderArea,
+                                        BigDecimal newOrderCostPerSquareFoot, BigDecimal newOrderLaborCostPerSquareFoot,
+                                        BigDecimal newOrderMaterialCost, BigDecimal newOrderLaborCost,
+                                        BigDecimal newOrderTax, BigDecimal newOrderTotal) {
+
+        newOrderState = newOrderState.substring(0, 1).toUpperCase() + newOrderState.substring(1);
+
         String currentOrderInfo = String.format("Order Date: %s | Customer Name: %s | State: %s | Tax Rate: %.2f | " +
-                        "Product Type: %s | Area: %.2f | Cost Per Square Foot: %.2f | Labor Cost Per Square Foot : %.2f | " +
+                        "Product Type: %s | Area: %.2f | Cost Per Square Foot: %.2f | Labor Cost Per Square Foot: %.2f | " +
                         "Material Cost: %.2f | Labor Cost: %.2f | Tax: %.2f | Total: $%.2f",
                 newOrderDate, newOrderCustomerName, newOrderState, newOrderTaxRate,
-                newOrderProductNumber, newOrderArea, newOrderCostPerSquareFoot, newOrderLaborCostPerSquareFoot,
+                newOrderProductType, newOrderArea, newOrderCostPerSquareFoot, newOrderLaborCostPerSquareFoot,
                 newOrderMaterialCost, newOrderLaborCost, newOrderTax, newOrderTotal);
 
         io.println(currentOrderInfo);
+    }
 
+    public String getPlaceOrderSelection() {
         return io.readString("Do you want to place the order? (Y/N)");
     }
+
+
+    public String getEditOrderSelection() {
+        return io.readString("Do you want to edit the order? (Y/N)");
+    }
+
 
     public void displayPlaceOrderErrorMessage(){
         io.println("Please enter 'Y' or 'N' to make your selection.");
     }
 
+
+    public String getOrderDateToEdit() {
+        return io.readString("Please enter the order date you wish to edit: ");
+    }
+
+
+    public int getOrderNumberToEdit() {
+        return io.readInt("Please enter the order number you wish to edit: ");
+    }
+
+    public void displayOrderDateToEditInvalidMessage() {
+        io.println("The order date you entered is invalid. Please enter a valid date to proceed.");
+    }
+
+    public void displayOrderDateToEditInexistMessage() {
+        io.println("Sorry, no orders exist for the entered date. Please check the date and try again.");
+    }
+
+    public void displayEditOrderBanner() {
+        io.println("=== Edit Order ===");
+    }
+
+    public void diplayEditOrderMessage() {
+        io.println("Enter a new value to replace the existing data, " +
+                "or press Enter to keep the current value unchanged. ");
+    }
+
+
+    public String getUpdatedCustomerName(String currentCustomerName) {
+        return io.readString("Please enter customer name (" + currentCustomerName + "): ");
+    }
+
+    public String getUpdatedState(String currentState) {
+        return io.readString("Please enter state (" + currentState + "): ");
+    }
+
+    public String getUpdatedProductNumberInString(String currentProductType) {
+        return io.readString("Please enter product number (" + currentProductType + "): ");
+    }
+
+    public String getUpdatedArea(String currentArea) {
+        return io.readString("Please enter area (" + currentArea + "): ");
+    }
+
+    public void displayEditOrderSuccessBar() {
+        io.readString("Order successfully edited. Please hit enter to continue.");
+    }
 }

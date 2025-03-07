@@ -10,7 +10,11 @@ public interface OrdersDAO {
 
     List<Orders> getAllOrders(String orderDate);
 
-    Orders getOrder(int orderNumber);
+    Orders getOrder(String orderDate, int orderNumber);
+
+    Orders getOrderToBeEdited(String orderDate, int orderNumber);
+
+    void editOrder(Orders orderToEdit, String orderDate);
 
     Orders removeOrder(int orderNumber);
 }
