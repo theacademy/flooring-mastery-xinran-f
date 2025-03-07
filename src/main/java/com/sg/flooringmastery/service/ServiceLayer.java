@@ -33,4 +33,6 @@ public interface ServiceLayer {
     boolean validateOrderDateFormat(String orderDateToEdit);
 
     boolean validateEditOrRemoveOrderConfirmation(String editOrderSelection);
+
+    void exportData();
 }

@@ -6,63 +6,70 @@ import com.sg.flooringmastery.dto.Products;
 import com.sg.flooringmastery.dto.Tax;
 import com.sg.flooringmastery.service.ServiceLayer;
 import com.sg.flooringmastery.service.ServiceLayerImpl;
-import com.sg.flooringmastery.ui.UserIO;
-import com.sg.flooringmastery.ui.UserIOConsoleImpl;
 import com.sg.flooringmastery.ui.View;
 
 import java.math.BigDecimal;
 import java.util.List;
 
 public class Controller {
-    private UserIO io = new UserIOConsoleImpl();
-    private View view = new View();
-    private OrdersDAO ordersDAO = new OrdersDAOFilelmpl();
-    private ProductsDAO productsDAO = new ProductsDAOFilelmpl();
-    private TaxDAO taxDAO = new TaxDAOFilelmpl();
-    private ServiceLayer service = new ServiceLayerImpl(ordersDAO, productsDAO, taxDAO);
+    private View view;
+    private OrdersDAO ordersDAO;
+    private ProductsDAO productsDAO;
+    private TaxDAO taxDAO;
+    private ServiceLayer service;
 
-    // TODO
-    public Controller() {}
+    public Controller(View view, OrdersDAO ordersDAO, ProductsDAO productsDAO, TaxDAO taxDAO, ServiceLayer service) {
+        this.view = view;
+        this.ordersDAO = ordersDAO;
+        this.productsDAO = productsDAO;
+        this.taxDAO = taxDAO;
+        this.service = service;
+    }
 
     public void run() {
         boolean keepGoing = true;
         int menuSelection = 0;
 
-        while (keepGoing) {
-            menuSelection = getMenuSelection();
+        try {
+            while (keepGoing) {
+                menuSelection = getMenuSelection();
 
-            switch (menuSelection) {
-                case 1:
-                    listOrders();
-                    break;
-                case 2:
-                    createOrder();
-                    break;
-                case 3:
-                    editOrder();
-                    break;
-                case 4:
-                    removeOrder();
-                    break;
-                case 5:
-                    io.println("EXPORT ALL DATA");
-                    break;
-                case 6:
-                    keepGoing = false;
-                    break;
-                default:
-                    io.println("UNKNOWN COMMAND");
+                switch (menuSelection) {
+                    case 1:
+                        listOrders();
+                        break;
+                    case 2:
+                        createOrder();
+                        break;
+                    case 3:
+                        editOrder();
+                        break;
+                    case 4:
+                        removeOrder();
+                        break;
+                    case 5:
+                        exportData();
+                        break;
+                    case 6:
+                        keepGoing = false;
+                        break;
+                    default:
+                        unknownCommand();
+                }
             }
-        }
 
-        io.println("PROGRAM TERMINATED SUCCESSFULLY");
+            exitMessage();
+
+        } catch (OrdersDAOException e) {
+            view.displayErrorMessage(e.getMessage());
+        }
     }
 
     private int getMenuSelection() {
         return view.printMenuAndGetSelection();
     }
 
-    private void listOrders() {
+    private void listOrders() throws OrdersDAOException {
         String orderDate = view.getOrderDate();
         List<Orders> orderList = ordersDAO.getAllOrders(orderDate);
 
@@ -70,7 +77,7 @@ public class Controller {
         view.displayOrdersList(orderList);
     }
 
-    public void createOrder() {
+    public void createOrder() throws OrdersDAOException {
         view.displayCreateOrderBanner();
 
         String newOrderDate = "";
@@ -130,16 +137,15 @@ public class Controller {
             }
         }
 
-        // TODO: Tax rates are stored as whole numbers??
         // retrieve tax rate
         List<Tax> taxList = taxDAO.getAllTaxes();
         Tax selectedTax = new Tax();
+        final String state = newOrderStateFormatted;
 
-        for (Tax tax : taxList) {
-            if (newOrderStateFormatted.equals(tax.getStateName())) {
-                selectedTax = tax;
-            }
-        }
+        selectedTax = taxList.stream()
+                .filter(tax -> state.equals(tax.getStateName()))
+                .findFirst()
+                .orElse(null);
 
         newOrderTaxRate = selectedTax.getTaxRate();
 
@@ -251,7 +257,7 @@ public class Controller {
     }
 
 
-    public void editOrder() {
+    public void editOrder() throws OrdersDAOException {
         view.displayEditOrderBanner();
         view.diplayEditOrderMessage();
 
@@ -428,7 +434,7 @@ public class Controller {
         view.displayEditOrderSuccessBar();
     }
 
-    public void removeOrder() {
+    public void removeOrder() throws OrdersDAOException {
         view.displayRemoveOrderBanner();
 
         // get the order date and validate it
@@ -465,5 +471,22 @@ public class Controller {
         // remove the order
         ordersDAO.removeOrder(orderDate, orderNumber);
         view.displayRemoveOrderSuccessMessage();
+    }
+
+    private void exportData() throws OrdersDAOException {
+        try {
+            service.exportData();
+            view.displayExportSuccessMessage();
+        } catch (OrdersPersistenceException e) {
+            view.displayErrorMessage(e.getMessage());
+        }
+    }
+
+    private void unknownCommand() {
+        view.displayUnknownCommandBanner();
+    }
+
+    private void exitMessage() {
+        view.displayExitBanner();
     }
 }

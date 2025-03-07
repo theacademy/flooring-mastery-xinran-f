@@ -4,35 +4,36 @@ import com.sg.flooringmastery.dto.Orders;
 
 import java.io.*;
 import java.math.BigDecimal;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.*;
 
 public class OrdersDAOFilelmpl implements OrdersDAO {
     private Map<Integer, Orders> orders = new HashMap<>();
     public static final String DELIMETER = ",";
-    public static final String ORDER_DETAILS = "OrderNumber,CustomerName,State,TaxRate,ProductType,Area," +
+    public static final String ORDER_HEADER = "OrderNumber,CustomerName,State,TaxRate,ProductType,Area," +
             "CostPerSquareFoot,LaborCostPerSquareFoot,MaterialCost,LaborCost,Tax,Total";
 
     @Override
-    public Orders addOrder(String orderDate, int orderNumber, Orders order) {
-
+    public Orders addOrder(String orderDate, int orderNumber, Orders order) throws OrdersDAOException {
         loadOrdersFileByDate(orderDate);
 
         Orders newOrder = orders.put(orderNumber, order);
 
-        writeOrdersToFile(orderDate);
+        writeOrdersToFileByDate(orderDate);
 
         return newOrder;
     }
 
     @Override
-    public List<Orders> getAllOrders(String orderDate) {
+    public List<Orders> getAllOrders(String orderDate) throws OrdersDAOException {
         loadOrdersFileByDate(orderDate);
 
         return new ArrayList(orders.values());
     }
 
     @Override
-    public Orders getOrder(String orderDate, int orderNumber) {
+    public Orders getOrder(String orderDate, int orderNumber) throws OrdersDAOException {
         Orders order = new Orders();
 
         if (!checkIfOrderDateFileExists(orderDate)) {
@@ -49,6 +50,7 @@ public class OrdersDAOFilelmpl implements OrdersDAO {
         return order;
     }
 
+
     @Override
     public Orders getOrderToBeEditedOrRemoved(String orderDate, int orderNumber) {
         Orders orderToEdit = getOrder(orderDate, orderNumber);
@@ -57,31 +59,101 @@ public class OrdersDAOFilelmpl implements OrdersDAO {
     }
 
     @Override
-    public void editOrder(Orders orderToEdit, String orderDate) {
+    public void editOrder(Orders orderToEdit, String orderDate) throws OrdersDAOException {
         loadOrdersFileByDate(orderDate);
 
         if (orders.containsKey(orderToEdit.getOrderNumber())) {
             orders.put(orderToEdit.getOrderNumber(), orderToEdit);
-            writeOrdersToFile(orderDate);
+            writeOrdersToFileByDate(orderDate);
         }
     }
 
     @Override
-    public void removeOrder(String orderDate, int orderNumber) {
+    public void removeOrder(String orderDate, int orderNumber) throws OrdersDAOException {
         loadOrdersFileByDate(orderDate);
 
         if (orders.containsKey(orderNumber)) {
             orders.remove(orderNumber);
-            writeOrdersToFile(orderDate);
+            writeOrdersToFileByDate(orderDate);
         }
     }
 
-    // parameter doesFileExist
-    private void loadOrdersFileByDate(String ordersDate) {
-        String ordersFileName = generateOrdersFileName(ordersDate);
-        String ordersFilePath = generateOrdersFilePath(ordersFileName);
+    @Override
+    public void exportData() throws OrdersDAOException {
+        final String ORDERS_DIRECTORY = "./src/main/java/com/sg/flooringmastery/SampleFileData/Orders/";
+        final String BACKUP_DIRECTORY = "./src/main/java/com/sg/flooringmastery/SampleFileData/Backup";
 
-        File file = new File(ordersFilePath);
+        // verify if backup folder exists
+        File backupFolder = new File(BACKUP_DIRECTORY);
+
+        if (!backupFolder.exists()) {
+            backupFolder.mkdir();   // create the folder if it doesn't exist
+        }
+
+        File exportFile = new File(backupFolder, "DataExport.txt");
+
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter(exportFile))) {
+            writer.write(ORDER_HEADER);
+            writer.newLine();
+
+            // get all order files in the Orders directory
+            File ordersFolder = new File(ORDERS_DIRECTORY);
+            File[] orderFiles = ordersFolder.listFiles((dir, name) -> name.endsWith(".txt"));
+
+            if (orderFiles != null) {
+                for (File orderFile : orderFiles) {
+                    String orderDateAsString = orderFile.getName().substring(7, 15);
+                    loadOrdersFile(orderFile.getPath());
+
+                    // parse the original string into a Date object
+                    SimpleDateFormat originalDateFormat = new SimpleDateFormat("MMddyyyyy");
+                    Date orderDate = null;
+
+                    try {
+                        orderDate = originalDateFormat.parse(orderDateAsString);
+                    } catch (ParseException e) {
+                        throw new OrdersDAOException("Error parsing order date: " + orderDateAsString, e);
+                    }
+
+                    // format the date into MM-dd-yyyy
+                    SimpleDateFormat targetFormat = new SimpleDateFormat("MM-dd-yyyy");
+                    String orderDateFormatted = targetFormat.format(orderDate);
+
+                    orders.values().forEach(order -> {
+                        try {
+                            writer.write(String.join(DELIMETER,
+                                    String.valueOf(order.getOrderNumber()),
+                                    order.getCustomerName(),
+                                    order.getState(),
+                                    String.valueOf(order.getTaxRate()),
+                                    order.getProductType(),
+                                    String.valueOf(order.getArea()),
+                                    String.valueOf(order.getCostPerSquareFoot()),
+                                    String.valueOf(order.getLaborCostPerSquareFoot()),
+                                    String.valueOf(order.getMaterialCost()),
+                                    String.valueOf(order.getLaborCost()),
+                                    String.valueOf(order.getTax()),
+                                    String.valueOf(order.getTotal()),
+                                    orderDateFormatted
+                            ) + "\n");
+                            writer.flush();
+                        } catch (IOException e) {
+                            throw new OrdersDAOException("Error exporting order: " + orderDateAsString, e);
+                        }
+                    });
+                }
+            } else {
+                System.out.println("No order files found in the Orders directory.");
+            }
+        } catch (IOException e) {
+            throw new OrdersDAOException("Error exporting orders: " + e.getMessage(), e);
+        }
+    }
+
+
+
+    private void loadOrdersFile(String fileName) throws OrdersDAOException{
+        File file = new File(fileName);
 
         // if the file does not exist, quit the method
         if (!file.exists()) {
@@ -102,15 +174,16 @@ public class OrdersDAOFilelmpl implements OrdersDAO {
                 }
             }
         } catch (IOException e) {
-            throw new OrdersPersistenceException("Error reading order file.", e);
+            throw new OrdersDAOException("Error reading order file.", e);
         }
     }
 
+    private void loadOrdersFileByDate(String ordersDate) {
+        String ordersFileName = generateOrdersFileName(ordersDate);
+        String ordersFilePath = generateOrdersFilePath(ordersFileName);
 
-
-
-
-
+        loadOrdersFile(ordersFilePath);
+    }
 
     public boolean checkIfOrderDateFileExists(String orderDate) {
         String orderFileName = generateOrdersFileName(orderDate);
@@ -124,12 +197,6 @@ public class OrdersDAOFilelmpl implements OrdersDAO {
 
         return true;
     }
-
-
-
-
-
-
 
     private Orders unmarshallOrder(String orderAsText) {
         String[] orderTokens = orderAsText.split(DELIMETER);
@@ -195,19 +262,17 @@ public class OrdersDAOFilelmpl implements OrdersDAO {
     }
 
     //Orders_MMDDYYYY.txt.
-    private void writeOrdersToFile(String ordersDate) {
+    private void writeOrdersToFileByDate(String ordersDate) throws OrdersDAOException {
         String ordersFileName = generateOrdersFileName(ordersDate);
         String ordersFilePath = generateOrdersFilePath(ordersFileName);
-        boolean doesFileExist = true;
 
         PrintWriter printWriter = null;
 
         try {
             File file = new File(ordersFilePath);
 
-            // check if the file exists, if not, create a new file
+            // check if the file exists
             if (!file.exists()) {
-                doesFileExist = false;
                 if (!file.createNewFile()) {
                     throw new IOException("Failed to create new file: " + ordersFilePath);
                 }
@@ -218,8 +283,7 @@ public class OrdersDAOFilelmpl implements OrdersDAO {
             String orderAsText;
             List<Orders> ordersList = this.getAllOrders(ordersDate);
 
-            // TODO: To check
-            printWriter.println(ORDER_DETAILS);
+            printWriter.println(ORDER_HEADER);
 
             for (Orders currentOrder : ordersList) {
                 orderAsText = masharshallOrder(currentOrder);
@@ -227,7 +291,7 @@ public class OrdersDAOFilelmpl implements OrdersDAO {
                 printWriter.flush();
             }
         } catch (IOException e) {
-            throw new OrdersPersistenceException("Could not save order data.", e);
+            throw new OrdersDAOException("Could not save order data.", e);
         } finally {
             if (printWriter != null) {
                 printWriter.close();

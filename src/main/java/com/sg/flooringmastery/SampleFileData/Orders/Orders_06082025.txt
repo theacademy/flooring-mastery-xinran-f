@@ -1,0 +1,2 @@
+OrderNumber,CustomerName,State,TaxRate,ProductType,Area,CostPerSquareFoot,LaborCostPerSquareFoot,MaterialCost,LaborCost,Tax,Total
+1,Pyke,Texas,4.45,Laminate,456,1.75,2.10,798.00,957.60,78.124200,1833.724200

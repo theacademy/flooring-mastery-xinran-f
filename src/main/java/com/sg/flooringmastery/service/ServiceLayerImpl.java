@@ -109,12 +109,12 @@ public class ServiceLayerImpl implements ServiceLayer {
         List<Tax> taxesList = taxDAO.getAllTaxes();
         String newOrderStateFormatted = orderState.substring(0, 1).toUpperCase() + orderState.substring(1);
 
-        for (Tax tax : taxesList) {
-            if (newOrderStateFormatted.equals(tax.getStateName())) {
-                return true;
-            }
-        }
+        boolean stateFound = taxesList.stream()
+                .anyMatch(tax -> newOrderStateFormatted.equals(tax.getStateName()));
 
+        if (stateFound) {
+            return true;
+        }
         return false;
     }
 
@@ -189,5 +189,13 @@ public class ServiceLayerImpl implements ServiceLayer {
         }
 
         return true;
+    }
+
+
+
+    // TODO
+    @Override
+    public void exportData() {
+        ordersDAO.exportData();
     }
 }

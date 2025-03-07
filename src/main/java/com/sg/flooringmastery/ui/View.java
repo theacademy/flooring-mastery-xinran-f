@@ -49,10 +49,7 @@ public class View {
     If no orders exist for that date, it will display an error message and return the user to the main menu.
      */
     public void displayOrdersList(List<Orders> ordersList) {
-        for (Orders currentOrder : ordersList) {
-            displayOrder(currentOrder);  // Call the displayOrder method for each order
-        }
-
+        ordersList.forEach(order -> displayOrder(order));
         io.readString("Please hit enter to continue.");
     }
 
@@ -232,5 +229,22 @@ public class View {
 
     public void displayRemoveOrderSuccessMessage() {
         io.println("The order has been successfully removed.");
+    }
+
+    public void displayExportSuccessMessage() {
+        io.println("All data has been successfully exported.");
+    }
+
+    public void displayExitBanner() {
+        io.print("PROGRAM TERMINATED SUCCESSFULLY");
+    }
+
+    public void displayUnknownCommandBanner() {
+        io.print("Unknown Command!");
+    }
+
+    public void displayErrorMessage(String errorMsg) {
+        io.print("=== ERROR ===");
+        io.print(errorMsg);
     }
 }

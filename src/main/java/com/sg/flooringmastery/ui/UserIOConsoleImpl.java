@@ -4,7 +4,7 @@ import java.util.Scanner;
 
 public class UserIOConsoleImpl implements UserIO {
 
-    Scanner sc = new Scanner(System.in);
+    private final Scanner scanner = new Scanner(System.in);
 
     @Override
     public void print(String message) {
@@ -17,78 +17,118 @@ public class UserIOConsoleImpl implements UserIO {
     }
 
     @Override
-    public double readDouble(String prompt) {
-        println(prompt);
-        return Double.parseDouble(sc.nextLine());
-    }
+    public String readString(String prompt) {
+        System.out.println(prompt);
 
-    @Override
-    public double readDouble(String prompt, double min, double max) {
-        double num;
-        do {
-            println(prompt);
-            num = Double.parseDouble(sc.nextLine());
-        } while (num < min || num > max);
-
-        return num;
-    }
-
-    @Override
-    public float readFloat(String prompt) {
-        println(prompt);
-        return Float.parseFloat(sc.nextLine());
-    }
-
-    @Override
-    public float readFloat(String prompt, float min, float max) {
-        float num;
-        do {
-            println(prompt);
-            num = Float.parseFloat(sc.nextLine());
-        } while (num < min || num > max);
-
-        return num;
+        return scanner.nextLine();
     }
 
     @Override
     public int readInt(String prompt) {
-        println(prompt);
-        return Integer.parseInt(sc.nextLine());
+        while (true) {
+            try {
+                String input = readString(prompt);
+                return Integer.parseInt(input);
+            } catch (NumberFormatException e) {
+                print("Invalid input. Please enter a valid integer.");
+            }
+        }
     }
 
     @Override
     public int readInt(String prompt, int min, int max) {
-        int num;
-        do {
-            println(prompt);
-            num = Integer.parseInt(sc.nextLine());
-        } while (num < min || num > max);
+        int value;
 
-        return num;
+        do {
+            value = readInt(prompt);
+
+            if (value < min || value > max) {
+                print("Input must be between " + min + " and " + max + ". Please try again.");
+            }
+        } while (value < min || value > max);
+
+        return value;
+    }
+
+    @Override
+    public double readDouble(String prompt) {
+        while (true) {
+            try {
+                String input = readString(prompt);
+                return Double.parseDouble(input);
+            } catch (NumberFormatException e) {
+                print("Invalid input. Please enter a valid double.");
+            }
+        }
+    }
+
+    @Override
+    public double readDouble(String prompt, double min, double max) {
+        double value;
+
+        do {
+            value = readDouble(prompt);
+
+            if (value < min || value > max) {
+                print("Input must be between " + min + " and " + max + ". Please try again.");
+            }
+        } while (value < min || value > max);
+
+        return value;
+    }
+
+    @Override
+    public float readFloat(String prompt) {
+        while (true) {
+            try {
+                String input = readString(prompt);
+
+                return Float.parseFloat(input);
+            } catch (NumberFormatException e) {
+                print("Invalid input. Please enter a valid float.");
+            }
+        }
+    }
+
+    @Override
+    public float readFloat(String prompt, float min, float max) {
+        float value;
+
+        do {
+            value = readFloat(prompt);
+
+            if (value < min || value > max) {
+                print("Input must be between " + min + " and " + max + ". Please try again.");
+            }
+        } while (value < min || value > max);
+
+        return value;
     }
 
     @Override
     public long readLong(String prompt) {
-
-        println(prompt);
-        return Long.parseLong(sc.nextLine());
+        while (true) {
+            try {
+                String input = readString(prompt);
+                return Long.parseLong(input);
+            } catch (NumberFormatException e) {
+                print("Invalid input. Please enter a valid long integer.");
+            }
+        }
     }
 
     @Override
     public long readLong(String prompt, long min, long max) {
-        long num;
+        long value;
+
         do {
-            println(prompt);
-            num = Long.parseLong(sc.nextLine());
-        } while (num < min || num > max);
+            value = readLong(prompt);
 
-        return num;
+            if (value < min || value > max) {
+                print("Input must be between " + min + " and " + max + ". Please try again.");
+            }
+        } while (value < min || value > max);
+
+        return value;
     }
-
-    @Override
-    public String readString(String prompt) {
-        println(prompt);
-        return sc.nextLine();
-    }
-
 }
