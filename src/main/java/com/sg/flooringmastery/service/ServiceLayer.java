@@ -8,12 +8,16 @@ import java.math.BigDecimal;
 import java.util.List;
 
 public interface ServiceLayer {
+    // MaterialCost = (Area * CostPerSquareFoot)
     BigDecimal calculateMaterialCost(BigDecimal area, BigDecimal costPerSquareFoot);
 
+    // LaborCost = (Area * LaborCostPerSquareFoot)
     BigDecimal calculateLaborCost(BigDecimal area, BigDecimal laborCostPerSquareFoot);
 
+    // Tax = (MaterialCost + LaborCost) * (TaxRate/100)
     BigDecimal calculateTax(BigDecimal materialCost, BigDecimal laborCost, BigDecimal taxRate);
 
+    // Total = (MaterialCost + LaborCost + Tax)
     BigDecimal calculateTotal(BigDecimal materialCost, BigDecimal laborCost, BigDecimal tax);
 
     void addOrder(String orderDate, int orderNumber, Orders order) throws

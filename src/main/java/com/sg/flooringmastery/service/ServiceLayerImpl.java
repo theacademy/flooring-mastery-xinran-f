@@ -12,6 +12,7 @@ import java.io.BufferedReader;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
@@ -22,6 +23,8 @@ public class ServiceLayerImpl implements ServiceLayer {
     OrdersDAO ordersDAO;
     TaxDAO taxDAO;
     ProductsDAO productsDAO;
+
+    public ServiceLayerImpl() {}
 
     public ServiceLayerImpl(OrdersDAO ordersDAO, ProductsDAO productsDAO, TaxDAO taxDAO) {
         this.ordersDAO = ordersDAO;
@@ -41,7 +44,7 @@ public class ServiceLayerImpl implements ServiceLayer {
 
     @Override
     public BigDecimal calculateTax(BigDecimal materialCost, BigDecimal laborCost, BigDecimal taxRate) {
-        return (materialCost.add(laborCost)).multiply(taxRate.divide(BigDecimal.valueOf(100)));
+        return (materialCost.add(laborCost)).multiply(taxRate.divide(BigDecimal.valueOf(100)).setScale(2));
     }
 
     @Override

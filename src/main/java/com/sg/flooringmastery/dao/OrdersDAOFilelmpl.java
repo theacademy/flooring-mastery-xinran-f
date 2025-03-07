@@ -16,7 +16,7 @@ public class OrdersDAOFilelmpl implements OrdersDAO {
             "CostPerSquareFoot,LaborCostPerSquareFoot,MaterialCost,LaborCost,Tax,Total";
 
     public OrdersDAOFilelmpl(){
-        ORDER_FILES_FOLDER = "./src/main/java/com/sg/flooringmastery/SampleFileData/Orders/";;
+        ORDER_FILES_FOLDER = "./src/main/java/com/sg/flooringmastery/SampleFileData/Orders/";
     }
 
     @Override

@@ -20,7 +20,7 @@ public class View {
         io.println("* 2. Add an Order");
         io.println("* 3. Edit an Order");
         io.println("* 4. Remove an Order");
-        io.println("* 5. Export All Data");
+        io.println("* 5. Export Data");
         io.println("* 6. Quit");
         io.println("* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *");
 

@@ -24,7 +24,7 @@ class OrdersDAOFilelmplTest {
 
     @BeforeEach
     public void setUp() throws IOException {
-        String testFile = "testOrders.txt";
+        String testFile = "./src/test/java/com/sg/flooringmastery/dao/Orders_01012025.txt";
 
         // use the FileWriter to quickly blank the file
         new FileWriter(testFile);
@@ -33,37 +33,31 @@ class OrdersDAOFilelmplTest {
 
     @AfterEach
     public void tearDown() {
+        testOrdersDAO = null;
     }
 
     @Test
-    void addOrder() {
+    void addOrder() throws Exception {
+
     }
 
     @Test
-    void getAllOrders() {
+    void getAllOrders() throws Exception {
     }
 
     @Test
-    void getOrder() {
+    void getOrder() throws Exception{
     }
 
     @Test
-    void getOrderToBeEditedOrRemoved() {
+    void editOrder() throws Exception {
     }
 
     @Test
-    void editOrder() {
+    void removeOrder() throws Exception {
     }
 
     @Test
-    void removeOrder() {
-    }
-
-    @Test
-    void exportData() {
-    }
-
-    @Test
-    void checkIfOrderDateFileExists() {
+    void exportData() throws Exception {
     }
 }
