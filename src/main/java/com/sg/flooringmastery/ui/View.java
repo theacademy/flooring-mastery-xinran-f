@@ -9,6 +9,10 @@ import java.util.List;
 public class View {
     private UserIO io = new UserIOConsoleImpl();
 
+    public View(UserIO io) {
+        this.io = io;
+    }
+
     public int printMenuAndGetSelection() {
         io.println("* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *");
         io.println("* <<Flooring Program>>");

@@ -11,7 +11,7 @@ import com.sg.flooringmastery.ui.View;
 public class APP {
     public static void main(String[] args) {
         UserIO io = new UserIOConsoleImpl();
-        View view = new View();
+        View view = new View(io);
         OrdersDAO ordersDAO = new OrdersDAOFilelmpl();
         ProductsDAO productsDAO = new ProductsDAOFilelmpl();
         TaxDAO taxDAO = new TaxDAOFilelmpl();
