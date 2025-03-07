@@ -201,4 +201,22 @@ public class Orders {
 
         return hash;
     }
+
+    @Override
+    public String toString() {
+        return "Orders{" +
+                "orderNumber=" + orderNumber +
+                ", customerName='" + customerName + '\'' +
+                ", state='" + state + '\'' +
+                ", taxRate=" + taxRate +
+                ", productType='" + productType + '\'' +
+                ", area=" + area +
+                ", costPerSquareFoot=" + costPerSquareFoot +
+                ", laborCostPerSquareFoot=" + laborCostPerSquareFoot +
+                ", materialCost=" + materialCost +
+                ", laborCost=" + laborCost +
+                ", tax=" + tax +
+                ", total=" + total +
+                '}';
+    }
 }
