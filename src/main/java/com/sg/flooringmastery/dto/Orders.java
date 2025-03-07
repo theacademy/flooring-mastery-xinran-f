@@ -1,6 +1,7 @@
 package com.sg.flooringmastery.dto;
 
 import java.math.BigDecimal;
+import java.util.Objects;
 
 public class Orders {
     private int orderNumber;
@@ -114,6 +115,90 @@ public class Orders {
         this.total = total;
     }
 
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
 
+        if (obj == null) {
+            return false;
+        }
 
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+
+        final Orders other = (Orders) obj;
+
+        if (!Objects.equals(this.orderNumber, other.orderNumber)) {
+            return false;
+        }
+
+        if (!Objects.equals(this.customerName, other.customerName)) {
+            return false;
+        }
+
+        if (!Objects.equals(this.state, other.state)) {
+            return false;
+        }
+
+        if (!Objects.equals(this.taxRate, other.taxRate)) {
+            return false;
+        }
+
+        if (!Objects.equals(this.productType, other.productType)) {
+            return false;
+        }
+
+        if (!Objects.equals(this.area, other.area)) {
+            return false;
+        }
+
+        if (!Objects.equals(this.costPerSquareFoot, other.costPerSquareFoot)) {
+            return false;
+        }
+
+        if (!Objects.equals(this.laborCostPerSquareFoot, other.laborCostPerSquareFoot)) {
+            return false;
+        }
+
+        if (!Objects.equals(this.materialCost, other.materialCost)) {
+            return false;
+        }
+
+        if (!Objects.equals(this.laborCost, other.laborCost)) {
+            return false;
+        }
+
+        if (!Objects.equals(this.tax, other.tax)) {
+            return false;
+        }
+
+        if (!Objects.equals(this.total, other.total)) {
+            return false;
+        }
+
+        return true;
+    }
+
+    @Override
+    public int hashCode() {
+        int hash = 7;
+
+        hash = 89 * hash + Objects.hashCode(this.orderNumber);
+        hash = 89 * hash + Objects.hashCode(this.customerName);
+        hash = 89 * hash + Objects.hashCode(this.state);
+        hash = 89 * hash + Objects.hashCode(this.taxRate);
+        hash = 89 * hash + Objects.hashCode(this.productType);
+        hash = 89 * hash + Objects.hashCode(this.area);
+        hash = 89 * hash + Objects.hashCode(this.costPerSquareFoot);
+        hash = 89 * hash + Objects.hashCode(this.laborCostPerSquareFoot);
+        hash = 89 * hash + Objects.hashCode(this.materialCost);
+        hash = 89 * hash + Objects.hashCode(this.laborCost);
+        hash = 89 * hash + Objects.hashCode(this.tax);
+        hash = 89 * hash + Objects.hashCode(this.total);
+
+        return hash;
+    }
 }
