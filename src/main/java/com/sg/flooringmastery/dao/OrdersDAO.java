@@ -15,7 +15,7 @@ public interface OrdersDAO {
 
     void editOrder(Orders orderToEdit, String orderDate, boolean createFileIfNotExists) throws OrdersDAOException;
 
-    void removeOrder(String orderDate, int orderNumber, boolean createFileIfNotExists) throws OrdersDAOException;
+    Orders removeOrder(String orderDate, int orderNumber, boolean createFileIfNotExists) throws OrdersDAOException;
 
     void exportData() throws OrdersDAOException;
 }

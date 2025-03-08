@@ -1,6 +1,7 @@
 package com.sg.flooringmastery.dao;
 
 import com.sg.flooringmastery.model.Orders;
+import org.springframework.core.annotation.Order;
 
 import java.io.*;
 import java.math.BigDecimal;
@@ -27,7 +28,7 @@ public class OrdersDAOFilelmpl implements OrdersDAO {
 
         writeOrdersToFileByDate(orderDate);
 
-        // clear current orders to avoid displaying two times the same info after adding new order
+        // clear current orders to avoid displaying two times the same info after adding a new order
         orders.clear();
 
         return newOrder;
@@ -73,16 +74,23 @@ public class OrdersDAOFilelmpl implements OrdersDAO {
         if (orders.containsKey(orderToEdit.getOrderNumber())) {
             orders.put(orderToEdit.getOrderNumber(), orderToEdit);
             writeOrdersToFileByDate(orderDate);
+        }  else {
+            throw new OrdersDAOException("Order does not exist.");
         }
     }
 
     @Override
-    public void removeOrder(String orderDate, int orderNumber, boolean createFileIfNotExists) throws OrdersDAOException {
+    public Orders removeOrder(String orderDate, int orderNumber, boolean createFileIfNotExists) throws OrdersDAOException {
         loadOrdersFileByDate(orderDate, createFileIfNotExists);
 
+        Orders removedOrder;
+
         if (orders.containsKey(orderNumber)) {
-            orders.remove(orderNumber);
+            removedOrder = orders.remove(orderNumber);
             writeOrdersToFileByDate(orderDate);
+            return removedOrder;
+        } else {
+            throw new OrdersDAOException("Order does not exist.");
         }
     }
 
@@ -167,39 +175,38 @@ public class OrdersDAOFilelmpl implements OrdersDAO {
 
         if (file.exists()) {
             loadExistingFile(file);
+            return;
         } else if (createFileIfNotExists){
             createNewFile(file);
         }
+
+        throw new OrdersDAOException("Error reading order file.");
     }
 
-    private void loadExistingFile(File file) throws OrdersDAOException {
-        try (Scanner scanner = new Scanner(new BufferedReader(new FileReader(file)))) {
-            readFile(scanner);
+    private void loadExistingFile(File orderFile) throws OrdersDAOException {
+        try (Scanner scanner = new Scanner(new BufferedReader(new FileReader(orderFile)))) {
+            String currentLine;
+            Orders currentOrder;
+
+            while (scanner.hasNextLine()) {
+                currentLine = scanner.nextLine();
+
+                // unmarshall if the line starts with a digit
+                if (!currentLine.isEmpty() && Character.isDigit(currentLine.charAt(0))) {
+                    currentOrder = unmarshallOrder(currentLine);
+                    orders.put(currentOrder.getOrderNumber(), currentOrder);
+                }
+            }
         } catch (IOException e) {
             throw new OrdersDAOException("Error reading order file.", e);
         }
     }
 
-    private void createNewFile(File file) throws OrdersDAOException {
+    private void createNewFile(File orderFile) throws OrdersDAOException {
         try {
-            file.createNewFile();
+            orderFile.createNewFile();
         } catch (IOException e) {
-            throw new OrdersDAOException("Error creating order file: " + file.getName(), e);
-        }
-    }
-
-    private void readFile(Scanner scanner) throws OrdersDAOException {
-        String currentLine;
-        Orders currentOrder;
-
-        while (scanner.hasNextLine()) {
-            currentLine = scanner.nextLine();
-
-            // unmarshall if the line starts with a digit
-            if (!currentLine.isEmpty() && Character.isDigit(currentLine.charAt(0))) {
-                currentOrder = unmarshallOrder(currentLine);
-                orders.put(currentOrder.getOrderNumber(), currentOrder);
-            }
+            throw new OrdersDAOException("Error creating order file: " + orderFile.getName(), e);
         }
     }
 

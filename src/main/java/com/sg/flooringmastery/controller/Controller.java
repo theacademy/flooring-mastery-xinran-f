@@ -85,7 +85,7 @@ public class Controller {
 
         if (orderList.isEmpty()) {
             view.displayErrorMessageBanner();
-            view.displayErrorMessage("No orders found for date: " + orderDate);
+            view.displayOrderFileInexistMessage();
             return;
         }
 
@@ -256,12 +256,12 @@ public class Controller {
         boolean isOrderReadyToBePlaced = service.checkIfNewOrderIsReadyToBePlaced(placeOrderSelection);
 
         if (!isOrderReadyToBePlaced) {
+            view.displayPlaceOrderCancelledMessage();
             return;
         }
 
         // if orders of this date exists, append new order to the existed file
         boolean isFileWithNewOrderDateExisted = service.checkIfNewOrderDateExists(newOrderDate);
-        //int numberOfExistingOrders = 0;
         int numberOfLastOrderInFile = 0;
         List<Orders> orderList;
 
@@ -283,12 +283,16 @@ public class Controller {
         if (isFileWithNewOrderDateExisted) {
             // append
             orderList = service.getAllOrders(newOrderDate);
-            numberOfLastOrderInFile = orderList.get(orderList.size() - 1).getOrderNumber();
-            newOrderNumber = numberOfLastOrderInFile + 1;
 
-            //numberOfExistingOrders = orderList.size();
-            //newOrderNumber = numberOfExistingOrders + 1;
-            newOrder.setOrderNumber(newOrderNumber);
+            // if empty, it means the file exists but empty
+            if (!orderList.isEmpty()) {
+                numberOfLastOrderInFile = orderList.get(orderList.size() - 1).getOrderNumber();
+                newOrderNumber = numberOfLastOrderInFile + 1;
+                newOrder.setOrderNumber(newOrderNumber);
+            } else {
+                // if an emppty file with the same order date exists, set the order number to 1 as well
+                newOrder.setOrderNumber(1);
+            }
         } else {
             // create a new file with new order starting at order number 1
             newOrder.setOrderNumber(1);

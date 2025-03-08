@@ -44,7 +44,7 @@ public class ServiceLayerImpl implements ServiceLayer {
 
     @Override
     public BigDecimal calculateTax(BigDecimal materialCost, BigDecimal laborCost, BigDecimal taxRate) {
-        return (materialCost.add(laborCost)).multiply(taxRate.divide(BigDecimal.valueOf(100)).setScale(2));
+        return (materialCost.add(laborCost)).multiply(taxRate.divide(BigDecimal.valueOf(100)));
     }
 
     @Override

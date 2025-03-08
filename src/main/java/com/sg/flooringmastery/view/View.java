@@ -70,7 +70,7 @@ public class View {
     }
 
     public void displayNewOrderDateErrorMessage() {
-        io.println("Please enter a valid order date. It must be in the future and follow the format: MMDDYYYYY.");
+        io.println("Please enter a valid order date. It must be in the future and follow the format: MMDDYYYYY.\n");
     }
 
     public String getNewOrderCustomerName() {
@@ -79,7 +79,7 @@ public class View {
 
     public void displayOrderCustomerNameErrorMessage() {
         io.println("Please enter a valid customer name that is not blank and only contains " +
-                "lowercase letters (a-z), digits (0-9), periods (.), and commas (,).");
+                "lowercase letters (a-z), digits (0-9), periods (.), and commas (,).\n");
     }
 
     public String getNewOrderState() {
@@ -87,7 +87,7 @@ public class View {
     }
 
     public void displayOrderStateNoExistsMessage() {
-        io.println("The state does not exist in the tax file, we cannot sell there.");
+        io.println("The state does not exist in the tax file, we cannot sell there.\n");
     }
 
     public int displayAvailableProductsAndGetNewOrderSelection(List<Products> productsList) {
@@ -115,7 +115,7 @@ public class View {
     }
 
     public void displayOrderProductNumberErrorMessage() {
-        io.println("Please enter a valid product number.");
+        io.println("Please enter a valid product number.\n");
     }
 
     public String getOrderArea() {
@@ -123,7 +123,7 @@ public class View {
     }
 
     public void displayOrderAreaErrorMessage(){
-        io.println("The area must be a positive decimal. Minimum order size is 100 sq ft.");
+        io.println("The area must be a positive decimal. Minimum order size is 100 sq ft.\n");
     }
 
 
@@ -157,7 +157,7 @@ public class View {
 
 
     public void displayPlaceOrderErrorMessage(){
-        io.println("Please enter 'Y' or 'N' to make your selection.");
+        io.println("Please enter 'Y' or 'N' to make your selection.\n");
     }
 
 
@@ -171,11 +171,11 @@ public class View {
     }
 
     public void displayOrderDateErrorMessage() {
-        io.println("The order date you entered is invalid. Please enter a valid date to proceed.");
+        io.println("The order date you entered is invalid. Please enter a valid date to proceed.\n");
     }
 
     public void displayOrderFileInexistMessage() {
-        io.println("Sorry, no orders exist for the entered date. Please check the date and try again.");
+        io.println("Sorry, no orders exist for the entered date. Please check the date and try again.\n");
     }
 
     public void displayEditOrderBanner() {
@@ -204,7 +204,11 @@ public class View {
     }
 
     public void displayEditOrderCancelledMessage() {
-        io.println("The order edit has been cancelled.");
+        io.println("The order edit has been cancelled.\n");
+    }
+
+    public void displayPlaceOrderCancelledMessage() {
+        io.println("The add order process has been cancelled.\n");
     }
 
     public void displayEditOrderSuccessBar() {
@@ -228,15 +232,15 @@ public class View {
     }
 
     public void displayRemoveOrderCancelledMessage() {
-        io.println("The order removal has been cancelled.");
+        io.println("The order removal has been cancelled.\n");
     }
 
     public void displayRemoveOrderSuccessMessage() {
-        io.println("The order has been successfully removed.");
+        io.println("The order has been successfully removed.\n");
     }
 
     public void displayExportSuccessMessage() {
-        io.println("All data has been successfully exported.");
+        io.println("All data has been successfully exported.\n");
     }
 
     public void displayExitBanner() {
@@ -244,7 +248,7 @@ public class View {
     }
 
     public void displayUnknownCommandErrorMessage() {
-        io.println("Unknown Command!");
+        io.println("Unknown Command!\n");
     }
 
     public void displayErrorMessage(String errorMsg) {
