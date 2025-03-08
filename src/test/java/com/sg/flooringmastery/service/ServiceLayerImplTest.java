@@ -3,6 +3,7 @@ package com.sg.flooringmastery.service;
 import org.junit.jupiter.api.Test;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -16,7 +17,7 @@ class ServiceLayerImplTest {
         BigDecimal costPerSquareFoot = BigDecimal.valueOf(5);
 
         // MaterialCost = (Area * CostPerSquareFoot)
-        BigDecimal expectedMaterialCost = BigDecimal.valueOf(500);
+        BigDecimal expectedMaterialCost = BigDecimal.valueOf(500).setScale(2, RoundingMode.HALF_UP);
 
         BigDecimal result = testService.calculateMaterialCost(area, costPerSquareFoot);
 
@@ -29,7 +30,7 @@ class ServiceLayerImplTest {
         BigDecimal laborCostPerSquareFoot = BigDecimal.valueOf(3);
 
         // LaborCost = (Area * LaborCostPerSquareFoot)
-        BigDecimal expectedLaborCost = BigDecimal.valueOf(600);
+        BigDecimal expectedLaborCost = BigDecimal.valueOf(600).setScale(2, RoundingMode.HALF_UP);
 
         BigDecimal result = testService.calculateLaborCost(area, laborCostPerSquareFoot);
 
@@ -57,7 +58,7 @@ class ServiceLayerImplTest {
         BigDecimal tax = BigDecimal.valueOf(50);
 
         // Total = (MaterialCost + LaborCost + Tax)
-        BigDecimal expectedTotal = BigDecimal.valueOf(850);
+        BigDecimal expectedTotal = BigDecimal.valueOf(850).setScale(2, RoundingMode.HALF_UP);
 
         BigDecimal result = testService.calculateTotal(materialCost, laborCost, tax);
 

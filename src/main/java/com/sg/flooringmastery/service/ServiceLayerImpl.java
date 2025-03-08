@@ -34,22 +34,22 @@ public class ServiceLayerImpl implements ServiceLayer {
 
     @Override
     public BigDecimal calculateMaterialCost(BigDecimal area, BigDecimal costPerSquareFoot) {
-        return area.multiply(costPerSquareFoot);
+        return area.multiply(costPerSquareFoot).setScale(2, RoundingMode.HALF_UP);
     }
 
     @Override
     public BigDecimal calculateLaborCost(BigDecimal area, BigDecimal laborCostPerSquareFoot) {
-        return area.multiply(laborCostPerSquareFoot);
+        return area.multiply(laborCostPerSquareFoot).setScale(2, RoundingMode.HALF_UP);
     }
 
     @Override
     public BigDecimal calculateTax(BigDecimal materialCost, BigDecimal laborCost, BigDecimal taxRate) {
-        return (materialCost.add(laborCost)).multiply(taxRate.divide(BigDecimal.valueOf(100)));
+        return (materialCost.add(laborCost)).multiply(taxRate.divide(BigDecimal.valueOf(100)).setScale(2, RoundingMode.HALF_UP));
     }
 
     @Override
     public BigDecimal calculateTotal(BigDecimal materialCost, BigDecimal laborCost, BigDecimal tax) {
-        return materialCost.add(laborCost).add(tax);
+        return materialCost.add(laborCost).add(tax).setScale(2, RoundingMode.HALF_UP);
     }
 
     @Override
