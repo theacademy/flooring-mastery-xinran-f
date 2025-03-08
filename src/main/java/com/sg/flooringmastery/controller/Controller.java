@@ -97,7 +97,7 @@ public class Controller {
         view.displayCreateOrderBanner();
 
         String newOrderDate = "";
-        int newOrderNumber = 0;
+        int newOrderNumber = 1;
         String newOrderCustomerName = "";
         String newOrderStateNonFormatted = "";
         String newOrderStateFormatted = "";

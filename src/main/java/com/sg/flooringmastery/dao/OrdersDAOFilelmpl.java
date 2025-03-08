@@ -28,7 +28,7 @@ public class OrdersDAOFilelmpl implements OrdersDAO {
 
         writeOrdersToFileByDate(orderDate);
 
-        // clear current orders to avoid displaying two times the same info after adding a new order
+        // clear current orders to avoid displaying/saving the same info twice after adding a new order
         orders.clear();
 
         return newOrder;
@@ -38,7 +38,12 @@ public class OrdersDAOFilelmpl implements OrdersDAO {
     public List<Orders> getAllOrders(String orderDate, boolean createFileIfNotExists) throws OrdersDAOException {
         loadOrdersFileByDate(orderDate, createFileIfNotExists);
 
-        return new ArrayList(orders.values());
+        List<Orders> orderList = new ArrayList<>(orders.values());
+
+        // clear current orders to avoid displaying/saving the same info twice after adding a new order
+        orders.clear();
+
+        return orderList;
     }
 
     @Override
