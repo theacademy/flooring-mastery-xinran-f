@@ -178,6 +178,7 @@ public class OrdersDAOFilelmpl implements OrdersDAO {
             return;
         } else if (createFileIfNotExists){
             createNewFile(file);
+            return;
         }
 
         throw new OrdersDAOException("Error reading order file.");
